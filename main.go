@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	auth "todo-web-api/auth"
+
+	gin "github.com/gin-gonic/gin"
+)
 
 func main() {
-	fmt.Println()
+	r := gin.Default()
+	r.GET("/Login", auth.Login)
+	r.GET("/Register", auth.Register)
+	r.Run()
 }

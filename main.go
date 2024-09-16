@@ -1,13 +1,15 @@
 package main
 
 import (
-	auth "todo-web-api/auth"
-	app "todo-web-api/todo"
+	app "todo-web-api/App"
+	db "todo-web-api/Store"
+	auth "todo-web-api/authentication"
 
 	gin "github.com/gin-gonic/gin"
 )
 
 func main() {
+	db.DbConnection()
 	r := gin.Default()
 	RouteSetup(r)
 	r.Run()

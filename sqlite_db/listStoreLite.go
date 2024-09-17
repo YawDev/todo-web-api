@@ -17,28 +17,40 @@ func DeleteList(id int) (success bool, err error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		fmt.Println("List not found")
-		return false, err
-	} else {
-		fmt.Println("Something went wrong querying for List.")
+		return false, errors.New("list record not found")
+	} else if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return false, errors.New("something went wrong")
 	}
 
 	result = Context.Delete(&list)
 	if result.Error != nil {
-		fmt.Println("Something went wrong while deleting List.")
-		return false, err
+		fmt.Println("something went wrong while deleting list")
+		return false, errors.New("something went wrong")
 	}
 	return true, nil
 }
 
-func GetListForUser(user *models.User) (*models.List, error) {
+func GetListForUser(id int) (*models.List, error) {
 	var list models.List
-	result := Context.Where("user_id = ?", user.Id)
+	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		fmt.Println("List not found")
-		return nil, result.Error
+		return nil, errors.New("list record not found")
 	} else if result.Error != nil {
-		fmt.Println("Something went wrong querying for List.")
+		fmt.Println("something went wrong")
+		return nil, result.Error
+	}
+	Context.Preload("Tasks").First(&list, id)
+	return &list, nil
+}
+
+// Get List by Id
+func GetList(id int) (*models.List, error) {
+	var list models.List
+	result := Context.First(&list, id)
+	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.New("list record not found")
+	} else if result.Error != nil {
+		fmt.Println("something went wrong.")
 		return nil, result.Error
 	}
 	return &list, nil

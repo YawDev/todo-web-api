@@ -16,30 +16,33 @@ func CreateTask(task *models.Task, listId int) (ID int, err error) {
 func DeleteTask(id int) (success bool, err error) {
 	var task models.Task
 	result := Context.First(&task, id)
+
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		fmt.Println("Task not found")
-		return false, err
-	} else {
-		fmt.Println("Something went wrong querying for Task.")
+		return false, errors.New("task record not found")
+	} else if result.Error != nil {
+		fmt.Println("Something went wrong.")
+		return false, errors.New("something went wrong")
 	}
 
 	result = Context.Delete(&task)
 	if result.Error != nil {
-		fmt.Println("Something went wrong while deleting Task.")
-		return false, err
+		return false, errors.New("something went wrong")
 	}
 	return true, nil
 }
 
-func GetTask(user *models.User) (*models.List, error) {
-	var list models.List
-	result := Context.Where("user_id = ?", user.Id)
+func GetTask(id int) (*models.Task, error) {
+	var task models.Task
+	result := Context.First(&task, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		fmt.Println("List not found")
-		return nil, result.Error
+		return nil, errors.New("task record not found")
 	} else if result.Error != nil {
-		fmt.Println("Something went wrong querying for List.")
-		return nil, result.Error
+		return nil, errors.New("something went wrong")
 	}
-	return &list, nil
+	return &task, nil
+}
+
+func UpdateTask(task *models.Task) (ID int, err error) {
+	result := Context.Save(&task)
+	return task.Id, result.Error
 }

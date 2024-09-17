@@ -9,6 +9,17 @@ import (
 )
 
 func CreateUser(user *models.User) (ID int, err error) {
+
+	var existingUser models.User
+
+	userQuery := Context.Where("Username = ?", user.Username).First(&existingUser)
+	if userQuery.Error == nil {
+		return 0, errors.New("user exists already")
+	} else if userQuery.Error != nil && !errors.Is(userQuery.Error, gorm.ErrRecordNotFound) {
+		fmt.Println("something went wrong")
+		return 0, userQuery.Error
+	}
+
 	result := Context.Create(&user)
 	return user.Id, result.Error
 }
@@ -19,7 +30,7 @@ func DeleteUser(id int) (success bool, err error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return false, errors.New("user not found")
 	} else {
-		fmt.Println("something went wrong querying for User.")
+		fmt.Println("something went wrong")
 	}
 
 	result = Context.Delete(&user)
@@ -35,7 +46,7 @@ func GetUser(id int) (*models.User, error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("user not found")
 	} else if result.Error != nil {
-		fmt.Println("something went wrong querying for User")
+		fmt.Println("something went wrong fetching User")
 		return nil, result.Error
 	}
 	return &user, nil

@@ -13,8 +13,8 @@ import (
 )
 
 type User struct {
-	Username string
-	Password string
+	Username string `binding:"required"`
+	Password string `binding:"required"`
 }
 
 // Login endpoint for Todo
@@ -43,10 +43,17 @@ func Register(c *gin.Context) {
 	}
 
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
-	sql.CreateUser(user)
+	id, err := sql.CreateUser(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "something went wrong",
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User created successfully.",
+		"Id":      id,
 	})
 }
 
@@ -71,7 +78,10 @@ func GetUserById(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, &user)
+	c.JSON(http.StatusOK, gin.H{
+		"Username":  &user.Username,
+		"CreatedAt": &user.CreatedAt,
+	})
 }
 
 func Hash(password string) []byte {

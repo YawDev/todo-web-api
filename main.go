@@ -2,14 +2,14 @@ package main
 
 import (
 	app "todo-web-api/App"
-	db "todo-web-api/Store"
-	auth "todo-web-api/authentication"
+	auth "todo-web-api/Authentication"
+	"todo-web-api/sqlite_db"
 
 	gin "github.com/gin-gonic/gin"
 )
 
 func main() {
-	db.DbConnection()
+	sqlite_db.Connect()
 	r := gin.Default()
 	RouteSetup(r)
 	r.Run()
@@ -17,6 +17,7 @@ func main() {
 
 func RouteSetup(r *gin.Engine) {
 	r.GET("/Login", auth.Login)
-	r.GET("/Register", auth.Register)
+	r.POST("/Register", auth.Register)
+	r.GET("/GetUser/:id", auth.GetUserById)
 	r.GET("/Home", app.Home)
 }

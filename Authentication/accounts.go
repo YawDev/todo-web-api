@@ -2,9 +2,10 @@ package authentication
 
 import (
 	http "net/http"
+	"strconv"
 	"time"
 	models "todo-web-api/Models"
-	sqlite "todo-web-api/Store/Sqlite"
+	sql "todo-web-api/sqlite_db"
 
 	bcr "golang.org/x/crypto/bcrypt"
 
@@ -42,11 +43,35 @@ func Register(c *gin.Context) {
 	}
 
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
-	sqlite.CreateUser(user)
+	sql.CreateUser(user)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User created successfully.",
 	})
+}
+
+// Fetch User By Id
+func GetUserById(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	user, err := sql.GetUser(id)
+	if err != nil && err.Error() == "user not found" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+	} else if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusOK, &user)
 }
 
 func Hash(password string) []byte {

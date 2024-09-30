@@ -11,6 +11,9 @@ import (
 	gin "github.com/gin-gonic/gin"
 )
 
+type ResponseJson struct {
+	Message string `json:"message" example:"Success"`
+}
 type SaveTask struct {
 	Title       string `binding:"required"`
 	Description string
@@ -21,6 +24,17 @@ type SetStatus struct {
 }
 
 // Create Task endpoint for Todo
+// Create Task By ListId godoc
+// @BasePath /api/v1
+// @Summary Create Task
+// @Schemes
+// @Description Sign-In with user credentials, for generated access token
+// @Accept json
+// @Produce json
+// @Param id path int true "listid"
+// @Param   Request body SaveTask true "Add Task"
+// @Success 200 {object} ResponseJson "Success"
+// @Router /CreateTask/{listid} [post]
 func AddTaskToList(c *gin.Context) {
 	var req SaveTask
 
@@ -57,7 +71,16 @@ func AddTaskToList(c *gin.Context) {
 	})
 }
 
-// Delete Task endpoint for Todo
+// Delete Task For User endpoint for Todo godoc
+// @BasePath /api/v1
+// @Summary Delete Task
+// @Schemes
+// @Description Sign-In with user credentials, for generated access token
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Success 200 {object} ResponseJson "Success"
+// @Router /DeleteTask/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -84,7 +107,17 @@ func DeleteTask(c *gin.Context) {
 	})
 }
 
-// Update Task endpoint for Todo
+// Update Task For User endpoint for Todo godoc
+// @BasePath /api/v1
+// @Summary Update Task
+// @Schemes
+// @Description Sign-In with user credentials, for generated access token
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param   Request body SaveTask true "Update Task"
+// @Success 200 {object} ResponseJson "Success"
+// @Router /UpdateTask/{id} [put]
 func UpdateTask(c *gin.Context) {
 	var req SaveTask
 
@@ -133,7 +166,17 @@ func UpdateTask(c *gin.Context) {
 	})
 }
 
-// Update Task endpoint for Todo
+// Change Task Status endpoint for Todo godoc
+// @BasePath /api/v1
+// @Summary Change Status Task
+// @Schemes
+// @Description Sign-In with user credentials, for generated access token
+// @Accept json
+// @Produce json
+// @Param id path int true "id"
+// @Param   Request body SetStatus true "Change Status"
+// @Success 200 {object} ResponseJson "Success"
+// @Router /TaskCompleted/{id} [put]
 func ChangeStatus(c *gin.Context) {
 	var req SetStatus
 

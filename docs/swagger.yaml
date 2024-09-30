@@ -1,0 +1,263 @@
+basePath: /api/v1
+definitions:
+  Todo.ResponseJson:
+    properties:
+      message:
+        example: Success
+        type: string
+    type: object
+  Todo.SaveTask:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  Todo.SetStatus:
+    properties:
+      isCompleted:
+        type: boolean
+    required:
+    - isCompleted
+    type: object
+  authentication.ResponseJson:
+    properties:
+      message:
+        example: Success
+        type: string
+    type: object
+  authentication.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Todo Web API with JWT Auth
+  title: Todo Web API
+  version: "1.0"
+paths:
+  /CreateList/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Create List
+  /CreateTask/{listid}:
+    post:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: listid
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Add Task
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/Todo.SaveTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Create Task
+  /DeleteList/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Delete List
+  /DeleteTask/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Delete Task
+  /GetList/{userid}:
+    get:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: userid
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Get List
+  /GetUser/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetch User Account
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/authentication.ResponseJson'
+      summary: GetUserById
+  /Login:
+    post:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: Login Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/authentication.ResponseJson'
+      summary: Login
+  /Register:
+    post:
+      consumes:
+      - application/json
+      description: Create User Account
+      parameters:
+      - description: Login Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/authentication.ResponseJson'
+      summary: Register
+  /TaskCompleted/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Change Status
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/Todo.SetStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Change Status Task
+  /UpdateTask/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Task
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/Todo.SaveTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/Todo.ResponseJson'
+      summary: Update Task
+securityDefinitions:
+  JWT:
+    in: header
+    name: token
+    type: apiKey
+swagger: "2.0"

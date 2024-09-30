@@ -51,3 +51,15 @@ func GetUser(id int) (*models.User, error) {
 	}
 	return &user, nil
 }
+
+func FindExistingAccount(username string, password string) (*models.User, error) {
+	var user models.User
+	result := Context.Where("Username = ?", username).First(&user)
+	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.New("user not found")
+	} else if result.Error != nil {
+		fmt.Println("something went wrong fetching User")
+		return nil, result.Error
+	}
+	return &user, nil
+}

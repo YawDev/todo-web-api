@@ -7,9 +7,8 @@ import (
 	models "todo-web-api/Models"
 	sql "todo-web-api/sqlite_db"
 
-	bcr "golang.org/x/crypto/bcrypt"
-
 	gin "github.com/gin-gonic/gin"
+	bcr "golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -17,7 +16,20 @@ type User struct {
 	Password string `binding:"required"`
 }
 
-// Login endpoint for Todo
+type ResponseJson struct {
+	Message string `json:"message" example:"Success"`
+}
+
+// Login endpoint for Todo godoc
+// @BasePath /api/v1
+// @Summary Login
+// @Schemes
+// @Description Sign-In with user credentials, for generated access token
+// @Accept json
+// @Produce json
+// @Param   Request body User true "Login Request"
+// @Success 200 {object} ResponseJson "Successful"
+// @Router /Login [post]
 func Login(c *gin.Context) {
 
 	var req User
@@ -27,12 +39,52 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Not Implemented Yet",
-	})
+	existingAccount, err := sql.FindExistingAccount(req.Username, req.Password)
+	if err != nil && err.Error() == "user not found" {
+		c.JSON(http.StatusBadRequest, ResponseJson{Message: err.Error()})
+		return
+	}
+
+	err = bcr.CompareHashAndPassword([]byte(existingAccount.Password), []byte(req.Password))
+	matchingPassword := err == nil
+
+	if !matchingPassword {
+		c.JSON(http.StatusBadRequest, ResponseJson{Message: "Invalid Password Credentials"})
+		return
+	}
+
+	token, err := GenerateAccessToken(existingAccount.Username, existingAccount.Id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating access token."})
+		return
+	}
+
+	c.SetCookie(
+		"access_token",
+		token,
+		3600,
+		c.Request.RequestURI,
+		"localhost",
+		true,
+		true,
+	)
+
+	resp := ResponseJson{Message: "Successful Login"}
+	c.Header("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	c.JSON(200, resp)
 }
 
-// Register endpoint for Todo
+// Register endpoint for Todo godoc
+// @BasePath /api/v1
+// @Summary Register
+// @Schemes
+// @Description Create User Account
+// @Accept json
+// @Produce json
+// @Param   Request body User true "Login Request"
+// @Success 200 {object} ResponseJson "Success"
+// @Router /Register [post]
 func Register(c *gin.Context) {
 
 	var req User
@@ -58,6 +110,15 @@ func Register(c *gin.Context) {
 }
 
 // Fetch User By Id
+// @BasePath /api/v1
+// @Summary GetUserById
+// @Schemes
+// @Description Fetch User Account
+// @Param id path int true "id"
+// @Accept json
+// @Produce json
+// @Success 200 {object} ResponseJson "Success"
+// @Router /GetUser/{id} [get]
 func GetUserById(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

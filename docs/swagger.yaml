@@ -63,6 +63,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Todo.ResponseJson'
+      security:
+      - BearerAuth: []
       summary: Create List
   /CreateTask/{listid}:
     post:
@@ -70,9 +72,9 @@ paths:
       - application/json
       description: Sign-In with user credentials, for generated access token
       parameters:
-      - description: listid
+      - description: List ID
         in: path
-        name: id
+        name: listid
         required: true
         type: integer
       - description: Add Task
@@ -88,6 +90,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Todo.ResponseJson'
+      security:
+      - BearerAuth: []
       summary: Create Task
   /DeleteList/{id}:
     delete:
@@ -107,6 +111,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Todo.ResponseJson'
+      security:
+      - BearerAuth: []
       summary: Delete List
   /DeleteTask/{id}:
     delete:
@@ -126,6 +132,8 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Todo.ResponseJson'
+      security:
+      - BearerAuth: []
       summary: Delete Task
   /GetList/{userid}:
     get:
@@ -133,9 +141,9 @@ paths:
       - application/json
       description: Sign-In with user credentials, for generated access token
       parameters:
-      - description: userid
+      - description: User ID
         in: path
-        name: id
+        name: userid
         required: true
         type: integer
       produces:
@@ -229,6 +237,9 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Todo.ResponseJson'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
       summary: Change Status Task
   /UpdateTask/{id}:
     put:
@@ -254,10 +265,12 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Todo.ResponseJson'
+      security:
+      - BearerAuth: []
       summary: Update Task
 securityDefinitions:
-  JWT:
+  BearerAuth:
     in: header
-    name: token
+    name: Authorization
     type: apiKey
 swagger: "2.0"

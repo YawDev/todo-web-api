@@ -1,3 +1,12 @@
+// @BasePath					/api/v1
+// @title						Todo Web API
+// @version					1.0
+// @description				Todo Web API with JWT Auth
+// @host						localhost:8080
+// @BasePath					/api/v1
+// @securityDefinitions.apikey	BearerAuth
+// @in							header
+// @name						Authorization
 package main
 
 import (
@@ -9,24 +18,24 @@ import (
 
 	docs "todo-web-api/docs"
 
+	"github.com/gin-contrib/cors"
 	gin "github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @BasePath /api/v1
-// @title Todo Web API
-// @version 1.0
-// @description Todo Web API with JWT Auth
-// @host localhost:8080
-// @BasePath /api/v1
-// @securityDefinitions.apiKey JWT
-// @in header
-// @name token
-
 func main() {
 	sqlite_db.Connect()
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:8080"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	v1 := r.Group("/api/v1")
 	{

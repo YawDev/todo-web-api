@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/CreateList/{id}": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -46,6 +51,11 @@ const docTemplate = `{
         },
         "/CreateTask/{listid}": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -57,8 +67,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "listid",
-                        "name": "id",
+                        "description": "List ID",
+                        "name": "listid",
                         "in": "path",
                         "required": true
                     },
@@ -84,6 +94,11 @@ const docTemplate = `{
         },
         "/DeleteList/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -113,6 +128,11 @@ const docTemplate = `{
         },
         "/DeleteTask/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -153,8 +173,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "userid",
-                        "name": "id",
+                        "description": "User ID",
+                        "name": "userid",
                         "in": "path",
                         "required": true
                     }
@@ -262,6 +282,14 @@ const docTemplate = `{
         },
         "/TaskCompleted/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -300,6 +328,11 @@ const docTemplate = `{
         },
         "/UpdateTask/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -398,9 +431,9 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "JWT": {
+        "BearerAuth": {
             "type": "apiKey",
-            "name": "token",
+            "name": "Authorization",
             "in": "header"
         }
     }

@@ -13,15 +13,16 @@ import (
 
 // Create List endpoint for Todo
 // Create List For User endpoint for Todo godoc
-// @BasePath /api/v1
-// @Summary Create List
-// @Schemes
-// @Description Sign-In with user credentials, for generated access token
-// @Accept json
-// @Produce json
-// @Param id path int true "id"
-// @Success 200 {object} ResponseJson "Success"
-// @Router /CreateList/{id} [post]
+//
+//	@BasePath	/api/v1
+//	@Summary	Create List
+//	@Description				Sign-In with user credentials, for generated access token
+//	@Accept						json
+//	@Produce					json
+//	@Security					BearerAuth
+//	@Param						id	path		int				true	"id"
+//	@Success					200	{object}	ResponseJson	"Success"
+//	@Router						/CreateList/{id} [post]
 func CreateListForUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -65,15 +66,16 @@ func CreateListForUser(c *gin.Context) {
 }
 
 // Delete List For User endpoint for Todo godoc
-// @BasePath /api/v1
-// @Summary Delete List
-// @Schemes
-// @Description Sign-In with user credentials, for generated access token
-// @Accept json
-// @Produce json
-// @Param id path int true "id"
-// @Success 200 {object} ResponseJson "Success"
-// @Router /DeleteList/{id} [delete]
+//
+//	@BasePath	/api/v1
+//	@Summary	Delete List
+//	@Description	Sign-In with user credentials, for generated access token
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int				true	"id"
+//	@Success		200	{object}	ResponseJson	"Success"
+//	@Router			/DeleteList/{id} [delete]
 func DeleteList(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -100,15 +102,16 @@ func DeleteList(c *gin.Context) {
 }
 
 // Fetch List By UserId godoc
-// @BasePath /api/v1
-// @Summary Get List
-// @Schemes
-// @Description Sign-In with user credentials, for generated access token
-// @Accept json
-// @Produce json
-// @Param id path int true "userid"
-// @Success 200 {object} ResponseJson "Success"
-// @Router /GetList/{userid} [get]
+//
+//	@BasePath	/api/v1
+//	@Summary	Get List
+//	@Schemes
+//	@Description	Sign-In with user credentials, for generated access token
+//	@Accept			json
+//	@Produce		json
+//	@Param			userid	path		int				true	"User ID"
+//	@Success		200	{object}	ResponseJson	"Success"
+//	@Router			/GetList/{userid} [get]
 func GetListByUserId(c *gin.Context) {
 	idParam := c.Param("userid")
 	id, err := strconv.Atoi(idParam)

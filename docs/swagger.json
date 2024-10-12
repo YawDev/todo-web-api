@@ -11,6 +11,11 @@
     "paths": {
         "/CreateList/{id}": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -40,6 +45,11 @@
         },
         "/CreateTask/{listid}": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -51,8 +61,8 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "listid",
-                        "name": "id",
+                        "description": "List ID",
+                        "name": "listid",
                         "in": "path",
                         "required": true
                     },
@@ -78,6 +88,11 @@
         },
         "/DeleteList/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -107,6 +122,11 @@
         },
         "/DeleteTask/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -147,8 +167,8 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "userid",
-                        "name": "id",
+                        "description": "User ID",
+                        "name": "userid",
                         "in": "path",
                         "required": true
                     }
@@ -256,6 +276,14 @@
         },
         "/TaskCompleted/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -294,6 +322,11 @@
         },
         "/UpdateTask/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Sign-In with user credentials, for generated access token",
                 "consumes": [
                     "application/json"
@@ -392,9 +425,9 @@
         }
     },
     "securityDefinitions": {
-        "JWT": {
+        "BearerAuth": {
             "type": "apiKey",
-            "name": "token",
+            "name": "Authorization",
             "in": "header"
         }
     }

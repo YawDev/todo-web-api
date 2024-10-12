@@ -21,15 +21,15 @@ type ResponseJson struct {
 }
 
 // Login endpoint for Todo godoc
-// @BasePath /api/v1
-// @Summary Login
-// @Schemes
-// @Description Sign-In with user credentials, for generated access token
-// @Accept json
-// @Produce json
-// @Param   Request body User true "Login Request"
-// @Success 200 {object} ResponseJson "Successful"
-// @Router /Login [post]
+//	@BasePath	/api/v1
+//	@Summary	Login
+//	@Schemes
+//	@Description	Sign-In with user credentials, for generated access token
+//	@Accept			json
+//	@Produce		json
+//	@Param			Request	body		User			true	"Login Request"
+//	@Success		200		{object}	ResponseJson	"Successful"
+//	@Router			/Login [post]
 func Login(c *gin.Context) {
 
 	var req User
@@ -76,15 +76,15 @@ func Login(c *gin.Context) {
 }
 
 // Register endpoint for Todo godoc
-// @BasePath /api/v1
-// @Summary Register
-// @Schemes
-// @Description Create User Account
-// @Accept json
-// @Produce json
-// @Param   Request body User true "Login Request"
-// @Success 200 {object} ResponseJson "Success"
-// @Router /Register [post]
+//	@BasePath	/api/v1
+//	@Summary	Register
+//	@Schemes
+//	@Description	Create User Account
+//	@Accept			json
+//	@Produce		json
+//	@Param			Request	body		User			true	"Login Request"
+//	@Success		200		{object}	ResponseJson	"Success"
+//	@Router			/Register [post]
 func Register(c *gin.Context) {
 
 	var req User
@@ -110,15 +110,15 @@ func Register(c *gin.Context) {
 }
 
 // Fetch User By Id
-// @BasePath /api/v1
-// @Summary GetUserById
-// @Schemes
-// @Description Fetch User Account
-// @Param id path int true "id"
-// @Accept json
-// @Produce json
-// @Success 200 {object} ResponseJson "Success"
-// @Router /GetUser/{id} [get]
+//	@BasePath	/api/v1
+//	@Summary	GetUserById
+//	@Schemes
+//	@Description	Fetch User Account
+//	@Param			id	path	int	true	"id"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	ResponseJson	"Success"
+//	@Router			/GetUser/{id} [get]
 func GetUserById(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

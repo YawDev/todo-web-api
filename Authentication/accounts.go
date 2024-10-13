@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 	models "todo-web-api/Models"
-	sql "todo-web-api/sqlite_db"
+	s "todo-web-api/Storage"
 
 	gin "github.com/gin-gonic/gin"
 	bcr "golang.org/x/crypto/bcrypt"
@@ -21,6 +21,7 @@ type ResponseJson struct {
 }
 
 // Login endpoint for Todo godoc
+//
 //	@BasePath	/api/v1
 //	@Summary	Login
 //	@Schemes
@@ -39,7 +40,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	existingAccount, err := sql.FindExistingAccount(req.Username, req.Password)
+	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
 	if err != nil && err.Error() == "user not found" {
 		c.JSON(http.StatusBadRequest, ResponseJson{Message: err.Error()})
 		return
@@ -76,6 +77,7 @@ func Login(c *gin.Context) {
 }
 
 // Register endpoint for Todo godoc
+//
 //	@BasePath	/api/v1
 //	@Summary	Register
 //	@Schemes
@@ -95,7 +97,7 @@ func Register(c *gin.Context) {
 	}
 
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
-	id, err := sql.CreateUser(user)
+	id, err := s.UserManager.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "something went wrong",
@@ -110,6 +112,7 @@ func Register(c *gin.Context) {
 }
 
 // Fetch User By Id
+//
 //	@BasePath	/api/v1
 //	@Summary	GetUserById
 //	@Schemes
@@ -128,7 +131,7 @@ func GetUserById(c *gin.Context) {
 		})
 	}
 
-	user, err := sql.GetUser(id)
+	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

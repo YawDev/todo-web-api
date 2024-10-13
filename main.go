@@ -14,7 +14,7 @@ import (
 	"runtime"
 	app "todo-web-api/App"
 	auth "todo-web-api/Authentication"
-	"todo-web-api/sqlite_db"
+	s "todo-web-api/Storage"
 
 	docs "todo-web-api/docs"
 
@@ -25,7 +25,10 @@ import (
 )
 
 func main() {
-	sqlite_db.Connect()
+	s.ConfigureDb()
+	DbStore := s.StoreManager
+	DbStore.Initialize()
+
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{

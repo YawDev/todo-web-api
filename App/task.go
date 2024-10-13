@@ -6,7 +6,7 @@ import (
 	"time"
 
 	models "todo-web-api/Models"
-	sql "todo-web-api/sqlite_db"
+	s "todo-web-api/Storage"
 
 	gin "github.com/gin-gonic/gin"
 )
@@ -26,13 +26,13 @@ type SetStatus struct {
 // Create Task endpoint for Todo
 // Create Task By ListId godoc
 //
-//	@BasePath	/api/v1
-//	@Summary	Create Task
+//	@BasePath		/api/v1
+//	@Summary		Create Task
 //	@Description	Sign-In with user credentials, for generated access token
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			listid		path		int				true	"List ID"
+//	@Param			listid	path		int				true	"List ID"
 //	@Param			Request	body		SaveTask		true	"Add Task"
 //	@Success		200		{object}	ResponseJson	"Success"
 //	@Router			/CreateTask/{listid} [post]
@@ -52,7 +52,7 @@ func AddTaskToList(c *gin.Context) {
 		})
 	}
 
-	result, err := sql.GetList(id)
+	result, err := s.ListManager.GetList(id)
 	if err != nil && err.Error() == "list record not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -65,7 +65,7 @@ func AddTaskToList(c *gin.Context) {
 
 	task := &models.Task{Title: req.Title, Description: req.Description, ListId: id, CreatedAt: time.Now()}
 
-	sql.CreateTask(task, id)
+	s.TaskManager.CreateTask(task, id)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Task created successfully.",
 		"Id":      result.Id,
@@ -93,7 +93,7 @@ func DeleteTask(c *gin.Context) {
 		})
 	}
 
-	result, err := sql.DeleteTask(id)
+	result, err := s.TaskManager.DeleteTask(id)
 	if err != nil && err.Error() == "task record not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -115,14 +115,14 @@ func DeleteTask(c *gin.Context) {
 //	@BasePath	/api/v1
 //	@Summary	Update Task
 //	@Schemes
-//	@Description				Sign-In with user credentials, for generated access token
-//	@Accept						json
-//	@Produce					json
-//	@Security					BearerAuth
-//	@Param						id		path		int				true	"id"
-//	@Param						Request	body		SaveTask		true	"Update Task"
-//	@Success					200		{object}	ResponseJson	"Success"
-//	@Router						/UpdateTask/{id} [put]
+//	@Description	Sign-In with user credentials, for generated access token
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		int				true	"id"
+//	@Param			Request	body		SaveTask		true	"Update Task"
+//	@Success		200		{object}	ResponseJson	"Success"
+//	@Router			/UpdateTask/{id} [put]
 func UpdateTask(c *gin.Context) {
 	var req SaveTask
 
@@ -139,7 +139,7 @@ func UpdateTask(c *gin.Context) {
 		})
 	}
 
-	task, err := sql.GetTask(id)
+	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -158,7 +158,7 @@ func UpdateTask(c *gin.Context) {
 		task.Description = req.Description
 	}
 
-	result, err := sql.UpdateTask(task)
+	result, err := s.TaskManager.UpdateTask(task)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
@@ -176,15 +176,15 @@ func UpdateTask(c *gin.Context) {
 //	@BasePath	/api/v1
 //	@Summary	Change Status Task
 //	@Schemes
-//	@Description				Sign-In with user credentials, for generated access token
-//	@Accept						json
-//	@Produce					json
-//	@Security					BearerAuth
-//	@Security					BearerAuth
-//	@Param						id		path		int				true	"id"
-//	@Param						Request	body		SetStatus		true	"Change Status"
-//	@Success					200		{object}	ResponseJson	"Success"
-//	@Router						/TaskCompleted/{id} [put]
+//	@Description	Sign-In with user credentials, for generated access token
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Security		BearerAuth
+//	@Param			id		path		int				true	"id"
+//	@Param			Request	body		SetStatus		true	"Change Status"
+//	@Success		200		{object}	ResponseJson	"Success"
+//	@Router			/TaskCompleted/{id} [put]
 func ChangeStatus(c *gin.Context) {
 	var req SetStatus
 
@@ -201,7 +201,7 @@ func ChangeStatus(c *gin.Context) {
 		})
 	}
 
-	task, err := sql.GetTask(id)
+	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -216,7 +216,7 @@ func ChangeStatus(c *gin.Context) {
 
 	task.IsCompleted = req.IsCompleted
 
-	result, err := sql.UpdateTask(task)
+	result, err := s.TaskManager.UpdateTask(task)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),

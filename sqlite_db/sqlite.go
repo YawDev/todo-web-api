@@ -8,20 +8,27 @@ import (
 	"gorm.io/gorm"
 )
 
+type StoreManagerLite struct {
+}
+
 var Context *gorm.DB
 
-func Connect() *gorm.DB {
+func (Db *StoreManagerLite) Initialize() {
+	Db.Connect()
+}
+
+func (Db *StoreManagerLite) Connect() *gorm.DB {
 	var err error
 	Context, err = gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
 	if err != nil {
 		panic("SQLite connection failed.")
 	}
 	fmt.Println("SQLite Connection Successful")
-	MigrateModels(Context)
+	Db.MigrateModels(Context)
 	return Context
 }
 
-func MigrateModels(db *gorm.DB) {
+func (Db *StoreManagerLite) MigrateModels(db *gorm.DB) {
 	db.AutoMigrate(&models.Task{})
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.List{})

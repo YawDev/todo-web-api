@@ -8,12 +8,15 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateTask(task *models.Task, listId int) (ID int, err error) {
+type TaskStoreLite struct {
+}
+
+func (T *TaskStoreLite) CreateTask(task *models.Task, listId int) (ID int, err error) {
 	result := Context.Create(&task)
 	return task.Id, result.Error
 }
 
-func DeleteTask(id int) (success bool, err error) {
+func (T *TaskStoreLite) DeleteTask(id int) (success bool, err error) {
 	var task models.Task
 	result := Context.First(&task, id)
 
@@ -31,7 +34,7 @@ func DeleteTask(id int) (success bool, err error) {
 	return true, nil
 }
 
-func GetTask(id int) (*models.Task, error) {
+func (T *TaskStoreLite) GetTask(id int) (*models.Task, error) {
 	var task models.Task
 	result := Context.First(&task, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -42,7 +45,7 @@ func GetTask(id int) (*models.Task, error) {
 	return &task, nil
 }
 
-func UpdateTask(task *models.Task) (ID int, err error) {
+func (T *TaskStoreLite) UpdateTask(task *models.Task) (ID int, err error) {
 	result := Context.Save(&task)
 	return task.Id, result.Error
 }

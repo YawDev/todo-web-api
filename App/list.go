@@ -6,7 +6,7 @@ import (
 	"time"
 
 	models "todo-web-api/Models"
-	sql "todo-web-api/sqlite_db"
+	s "todo-web-api/Storage"
 
 	gin "github.com/gin-gonic/gin"
 )
@@ -14,15 +14,15 @@ import (
 // Create List endpoint for Todo
 // Create List For User endpoint for Todo godoc
 //
-//	@BasePath	/api/v1
-//	@Summary	Create List
-//	@Description				Sign-In with user credentials, for generated access token
-//	@Accept						json
-//	@Produce					json
-//	@Security					BearerAuth
-//	@Param						id	path		int				true	"id"
-//	@Success					200	{object}	ResponseJson	"Success"
-//	@Router						/CreateList/{id} [post]
+//	@BasePath		/api/v1
+//	@Summary		Create List
+//	@Description	Sign-In with user credentials, for generated access token
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int				true	"id"
+//	@Success		200	{object}	ResponseJson	"Success"
+//	@Router			/CreateList/{id} [post]
 func CreateListForUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -32,7 +32,7 @@ func CreateListForUser(c *gin.Context) {
 		})
 	}
 
-	result, err := sql.GetUser(id)
+	result, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -43,7 +43,7 @@ func CreateListForUser(c *gin.Context) {
 		})
 	}
 
-	existingList, err := sql.GetListForUser(id)
+	existingList, err := s.ListManager.GetListForUser(id)
 	if existingList != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "There can be only 1 list per user.",
@@ -58,7 +58,7 @@ func CreateListForUser(c *gin.Context) {
 
 	list := &models.List{UserId: result.Id, CreatedAt: time.Now()}
 
-	sql.CreateList(list)
+	s.ListManager.CreateList(list)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "List created successfully.",
 		"Id":      list.Id,
@@ -67,8 +67,8 @@ func CreateListForUser(c *gin.Context) {
 
 // Delete List For User endpoint for Todo godoc
 //
-//	@BasePath	/api/v1
-//	@Summary	Delete List
+//	@BasePath		/api/v1
+//	@Summary		Delete List
 //	@Description	Sign-In with user credentials, for generated access token
 //	@Accept			json
 //	@Produce		json
@@ -85,7 +85,7 @@ func DeleteList(c *gin.Context) {
 		})
 	}
 
-	result, err := sql.DeleteList(id)
+	result, err := s.ListManager.DeleteList(id)
 	if err != nil && err.Error() == "list record not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -110,7 +110,7 @@ func DeleteList(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			userid	path		int				true	"User ID"
-//	@Success		200	{object}	ResponseJson	"Success"
+//	@Success		200		{object}	ResponseJson	"Success"
 //	@Router			/GetList/{userid} [get]
 func GetListByUserId(c *gin.Context) {
 	idParam := c.Param("userid")
@@ -121,7 +121,7 @@ func GetListByUserId(c *gin.Context) {
 		})
 	}
 
-	user, err := sql.GetUser(id)
+	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -134,7 +134,7 @@ func GetListByUserId(c *gin.Context) {
 		return
 	}
 
-	list, err := sql.GetListForUser(user.Id)
+	list, err := s.ListManager.GetListForUser(user.Id)
 	if err != nil && err.Error() == "list record not found" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

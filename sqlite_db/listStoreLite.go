@@ -8,12 +8,15 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateList(list *models.List) (ID int, err error) {
+type ListStoreLite struct {
+}
+
+func (L *ListStoreLite) CreateList(list *models.List) (ID int, err error) {
 	result := Context.Create(&list)
 	return list.Id, result.Error
 }
 
-func DeleteList(id int) (success bool, err error) {
+func (L *ListStoreLite) DeleteList(id int) (success bool, err error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -30,7 +33,7 @@ func DeleteList(id int) (success bool, err error) {
 	return true, nil
 }
 
-func GetListForUser(id int) (*models.List, error) {
+func (L *ListStoreLite) GetListForUser(id int) (*models.List, error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -44,7 +47,7 @@ func GetListForUser(id int) (*models.List, error) {
 }
 
 // Get List by Id
-func GetList(id int) (*models.List, error) {
+func (L *ListStoreLite) GetList(id int) (*models.List, error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {

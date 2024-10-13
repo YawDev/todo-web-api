@@ -8,7 +8,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateUser(user *models.User) (ID int, err error) {
+type UserStoreLite struct {
+}
+
+func (U *UserStoreLite) CreateUser(user *models.User) (ID int, err error) {
 
 	var existingUser models.User
 
@@ -24,7 +27,7 @@ func CreateUser(user *models.User) (ID int, err error) {
 	return user.Id, result.Error
 }
 
-func DeleteUser(id int) (success bool, err error) {
+func (U *UserStoreLite) DeleteUser(id int) (success bool, err error) {
 	var user models.User
 	result := Context.First(&user, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -40,7 +43,7 @@ func DeleteUser(id int) (success bool, err error) {
 	return true, nil
 }
 
-func GetUser(id int) (*models.User, error) {
+func (U *UserStoreLite) GetUser(id int) (*models.User, error) {
 	var user models.User
 	result := Context.First(&user, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -52,7 +55,7 @@ func GetUser(id int) (*models.User, error) {
 	return &user, nil
 }
 
-func FindExistingAccount(username string, password string) (*models.User, error) {
+func (U *UserStoreLite) FindExistingAccount(username string, password string) (*models.User, error) {
 	var user models.User
 	result := Context.Where("Username = ?", username).First(&user)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {

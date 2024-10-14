@@ -3,6 +3,7 @@ package Todo
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	models "todo-web-api/Models"
@@ -49,7 +50,7 @@ func CreateListForUser(c *gin.Context) {
 			"message": "There can be only 1 list per user.",
 		})
 		return
-	} else if err != nil {
+	} else if err != nil && !strings.Contains(err.Error(), "not found") {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})

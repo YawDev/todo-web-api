@@ -29,6 +29,8 @@ func ConfigureDb() {
 
 	if useSQLite {
 		Sqlite()
+	} else {
+		SqlServer()
 	}
 }
 
@@ -37,6 +39,13 @@ func Sqlite() {
 	TaskManager = &sql.TaskStoreLite{}
 	ListManager = &sql.ListStoreLite{}
 	StoreManager = &sql.StoreManagerLite{}
+}
+
+func SqlServer() {
+	UserManager = &UserStore{}
+	TaskManager = &TaskStore{}
+	ListManager = &ListStore{}
+	StoreManager = &StoreDbManager{}
 }
 
 type IListManager interface {
@@ -61,5 +70,5 @@ type IUserManager interface {
 }
 
 type IDatabase interface {
-	Initialize()
+	Connect()
 }

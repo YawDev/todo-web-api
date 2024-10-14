@@ -26,8 +26,8 @@ import (
 
 func main() {
 	s.ConfigureDb()
-	DbStore := s.StoreManager
-	DbStore.Initialize()
+	Db := s.StoreManager
+	Db.Connect()
 
 	r := gin.Default()
 

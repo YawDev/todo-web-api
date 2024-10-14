@@ -40,6 +40,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	var isLoggedIn = IsTokenActive(req.Username)
+	if isLoggedIn {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User is already logged in"})
+		return
+	}
+
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
 	if err != nil && err.Error() == "user not found" {
 		c.JSON(http.StatusBadRequest, ResponseJson{Message: err.Error()})
@@ -69,7 +75,7 @@ func Login(c *gin.Context) {
 		true,
 		true,
 	)
-
+	SaveToken(existingAccount.Username, token)
 	resp := ResponseJson{Message: "Successful Login"}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)

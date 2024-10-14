@@ -13,11 +13,7 @@ type StoreManagerLite struct {
 
 var Context *gorm.DB
 
-func (Db *StoreManagerLite) Initialize() {
-	Db.Connect()
-}
-
-func (Db *StoreManagerLite) Connect() *gorm.DB {
+func (Db *StoreManagerLite) Connect() {
 	var err error
 	Context, err = gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
 	if err != nil {
@@ -25,7 +21,6 @@ func (Db *StoreManagerLite) Connect() *gorm.DB {
 	}
 	fmt.Println("SQLite Connection Successful")
 	Db.MigrateModels(Context)
-	return Context
 }
 
 func (Db *StoreManagerLite) MigrateModels(db *gorm.DB) {

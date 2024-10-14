@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -9,11 +10,20 @@ import (
 )
 
 var jwtKey = []byte("Secret_Key")
+var activeTokens = make(map[string]string)
+var mutex = &sync.Mutex{}
 
 type Claims struct {
 	Username string
 	UserID   int
 	jwt.RegisteredClaims
+}
+
+func IsTokenActive(username string) bool {
+	mutex.Lock()
+	defer mutex.Unlock()
+	_, exists := activeTokens[username]
+	return exists
 }
 
 func GenerateAccessToken(username string, userId int) (string, error) {
@@ -90,4 +100,16 @@ func ParseRefreshToken(tokenStr string) (*jwt.Claims, error) {
 func payload(claims *Claims, c *gin.Context) {
 	c.Set("user_id", claims.UserID)
 	c.Set("username", claims.Username)
+}
+
+func SaveToken(username, token string) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	activeTokens[username] = token
+}
+
+func RemoveToken(username string) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	delete(activeTokens, username)
 }

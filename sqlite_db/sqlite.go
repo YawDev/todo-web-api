@@ -1,7 +1,7 @@
 package sqlite_db
 
 import (
-	"fmt"
+	"log"
 	models "todo-web-api/Models"
 
 	"gorm.io/driver/sqlite"
@@ -17,9 +17,11 @@ func (Db *StoreManagerLite) Connect() {
 	var err error
 	Context, err = gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
 	if err != nil {
-		panic("SQLite connection failed.")
+		errMsg := "SQLite connection failed."
+		log.Println(errMsg)
+		panic(errMsg)
 	}
-	fmt.Println("SQLite Connection Successful")
+	log.Println("SQLite Connection Successful")
 	Db.MigrateModels(Context)
 }
 

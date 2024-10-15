@@ -1,6 +1,8 @@
 package authentication
 
 import (
+	"errors"
+	"log"
 	http "net/http"
 	"strconv"
 	"time"
@@ -34,20 +36,25 @@ type ResponseJson struct {
 func Login(c *gin.Context) {
 
 	var req User
-
+	var errMessage = ""
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var isLoggedIn = IsTokenActive(req.Username)
 	if isLoggedIn {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User is already logged in"})
+		errMessage = "User is already logged in"
+		log.Println(errMessage, errors.New(errMessage))
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
 		return
 	}
 
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
 	if err != nil && err.Error() == "user not found" {
+
+		log.Println(err.Error(), err)
 		c.JSON(http.StatusBadRequest, ResponseJson{Message: err.Error()})
 		return
 	}
@@ -56,12 +63,16 @@ func Login(c *gin.Context) {
 	matchingPassword := err == nil
 
 	if !matchingPassword {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, ResponseJson{Message: "Invalid Password Credentials"})
 		return
 	}
 
 	token, err := GenerateAccessToken(existingAccount.Username, existingAccount.Id)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating access token."})
 		return
 	}
@@ -98,6 +109,8 @@ func Register(c *gin.Context) {
 	var req User
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -105,6 +118,8 @@ func Register(c *gin.Context) {
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
 	id, err := s.UserManager.CreateUser(user)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "something went wrong",
 		})
@@ -132,6 +147,8 @@ func GetUserById(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -139,10 +156,14 @@ func GetUserById(c *gin.Context) {
 
 	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -157,6 +178,8 @@ func GetUserById(c *gin.Context) {
 func Hash(password string) []byte {
 	hash, err := bcr.GenerateFromPassword([]byte(password), bcr.DefaultCost)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		panic(err)
 	}
 	return hash

@@ -1,6 +1,8 @@
 package Todo
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,6 +30,8 @@ func CreateListForUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -35,10 +39,14 @@ func CreateListForUser(c *gin.Context) {
 
 	result, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -46,11 +54,16 @@ func CreateListForUser(c *gin.Context) {
 
 	existingList, err := s.ListManager.GetListForUser(id)
 	if existingList != nil {
+		errMsg := "there can be only 1 list per user"
+		log.Println(errMsg, errors.New(errMsg))
+
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "There can be only 1 list per user.",
+			"message": errMsg,
 		})
 		return
 	} else if err != nil && !strings.Contains(err.Error(), "not found") {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -81,6 +94,7 @@ func DeleteList(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -88,11 +102,13 @@ func DeleteList(c *gin.Context) {
 
 	result, err := s.ListManager.DeleteList(id)
 	if err != nil && err.Error() == "list record not found" {
+		log.Println(err.Error(), err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	} else if err != nil {
+		log.Println(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -117,6 +133,8 @@ func GetListByUserId(c *gin.Context) {
 	idParam := c.Param("userid")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -124,11 +142,16 @@ func GetListByUserId(c *gin.Context) {
 
 	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
+
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -137,11 +160,15 @@ func GetListByUserId(c *gin.Context) {
 
 	list, err := s.ListManager.GetListForUser(user.Id)
 	if err != nil && err.Error() == "list record not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})

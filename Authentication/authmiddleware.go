@@ -1,10 +1,8 @@
 package authentication
 
 import (
-	//"log"
-	//"net/http"
-	//"os"
-	//"time"
+	"errors"
+	"log"
 	"net/http"
 	"strings"
 
@@ -14,18 +12,26 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
+		errMessage := ""
 
 		if tokenStr == "" {
+			errMessage = "access token required"
+
+			log.Println(errMessage, errors.New(errMessage))
+
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Access token required",
+				"error": errMessage,
 			})
 			c.Abort()
 			return
 		}
 
 		if !strings.HasPrefix(tokenStr, "Bearer") {
+			errMessage = "access token Bearer required"
+			log.Println(errMessage, errors.New(errMessage))
+
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Access token Bearer required",
+				"error": errMessage,
 			})
 			c.Abort()
 			return
@@ -36,6 +42,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		claims, err := ParseToken(tokenStr)
 
 		if err != nil {
+			log.Println(err.Error(), err)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 		}
@@ -44,13 +51,4 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 
-}
-
-func authorizator() func(data interface{}, c *gin.Context) bool {
-	return func(data interface{}, c *gin.Context) bool {
-		if v, ok := data.(*User); ok && v.Username != "" {
-			return true
-		}
-		return false
-	}
 }

@@ -1,6 +1,7 @@
 package Todo
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -40,6 +41,8 @@ func AddTaskToList(c *gin.Context) {
 	var req SaveTask
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -47,6 +50,8 @@ func AddTaskToList(c *gin.Context) {
 	idParam := c.Param("listid")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -54,10 +59,14 @@ func AddTaskToList(c *gin.Context) {
 
 	result, err := s.ListManager.GetList(id)
 	if err != nil && err.Error() == "list record not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -88,6 +97,8 @@ func DeleteTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -95,10 +106,14 @@ func DeleteTask(c *gin.Context) {
 
 	result, err := s.TaskManager.DeleteTask(id)
 	if err != nil && err.Error() == "task record not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -127,6 +142,8 @@ func UpdateTask(c *gin.Context) {
 	var req SaveTask
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -134,6 +151,8 @@ func UpdateTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -141,11 +160,15 @@ func UpdateTask(c *gin.Context) {
 
 	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -160,6 +183,8 @@ func UpdateTask(c *gin.Context) {
 
 	result, err := s.TaskManager.UpdateTask(task)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -189,6 +214,8 @@ func ChangeStatus(c *gin.Context) {
 	var req SetStatus
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -196,6 +223,8 @@ func ChangeStatus(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -203,11 +232,15 @@ func ChangeStatus(c *gin.Context) {
 
 	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	} else if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -218,6 +251,8 @@ func ChangeStatus(c *gin.Context) {
 
 	result, err := s.TaskManager.UpdateTask(task)
 	if err != nil {
+		log.Println(err.Error(), err)
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})

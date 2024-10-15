@@ -2,7 +2,7 @@ package sqlite_db
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	models "todo-web-api/Models"
 
 	"gorm.io/gorm"
@@ -17,9 +17,12 @@ func (U *UserStoreLite) CreateUser(user *models.User) (ID int, err error) {
 
 	userQuery := Context.Where("Username = ?", user.Username).First(&existingUser)
 	if userQuery.Error == nil {
-		return 0, errors.New("user exists already")
+		err := errors.New("user exists already")
+		log.Println(err.Error(), err)
+		return 0, err
 	} else if userQuery.Error != nil && !errors.Is(userQuery.Error, gorm.ErrRecordNotFound) {
-		fmt.Println("something went wrong")
+		err := errors.New("something went wrong")
+		log.Println(err.Error(), err)
 		return 0, userQuery.Error
 	}
 
@@ -31,14 +34,19 @@ func (U *UserStoreLite) DeleteUser(id int) (success bool, err error) {
 	var user models.User
 	result := Context.First(&user, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false, errors.New("user not found")
+		err := errors.New("user not found")
+		log.Println(err.Error(), err)
+		return false, err
 	} else {
-		fmt.Println("something went wrong")
+		err := errors.New("something went wrong")
+		log.Println(err.Error(), err)
 	}
 
 	result = Context.Delete(&user)
 	if result.Error != nil {
-		return false, errors.New("something went wrong while deleting User")
+		err := errors.New("something went wrong while deleting User")
+		log.Println(err.Error(), err)
+		return false, err
 	}
 	return true, nil
 }
@@ -47,9 +55,12 @@ func (U *UserStoreLite) GetUser(id int) (*models.User, error) {
 	var user models.User
 	result := Context.First(&user, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("user not found")
+		err := errors.New("user not found")
+		log.Println(err.Error(), err)
+		return nil, err
 	} else if result.Error != nil {
-		fmt.Println("something went wrong fetching User")
+		err := errors.New("something went wrong fetching User")
+		log.Println(err.Error(), err)
 		return nil, result.Error
 	}
 	return &user, nil
@@ -59,9 +70,12 @@ func (U *UserStoreLite) FindExistingAccount(username string, password string) (*
 	var user models.User
 	result := Context.Where("Username = ?", username).First(&user)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("user not found")
+		err := errors.New("user not found")
+		log.Println(err.Error(), err)
+		return nil, err
 	} else if result.Error != nil {
-		fmt.Println("something went wrong fetching User")
+		err := errors.New("something went wrong fetching User")
+		log.Println(err.Error(), err)
 		return nil, result.Error
 	}
 	return &user, nil

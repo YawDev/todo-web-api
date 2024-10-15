@@ -212,7 +212,27 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/authentication.ResponseJson"
+                            "$ref": "#/definitions/Todo.ResponseJson"
+                        }
+                    }
+                }
+            }
+        },
+        "/Home": {
+            "get": {
+                "description": "Sign-In with user credentials, for generated access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Home",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Todo.ResponseJson"
                         }
                     }
                 }
@@ -235,7 +255,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authentication.User"
+                            "$ref": "#/definitions/Todo.User"
                         }
                     }
                 ],
@@ -243,7 +263,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/authentication.ResponseJson"
+                            "$ref": "#/definitions/Todo.ResponseJson"
                         }
                     }
                 }
@@ -266,7 +286,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authentication.User"
+                            "$ref": "#/definitions/Todo.User"
                         }
                     }
                 ],
@@ -274,7 +294,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/authentication.ResponseJson"
+                            "$ref": "#/definitions/Todo.ResponseJson"
                         }
                     }
                 }
@@ -405,16 +425,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authentication.ResponseJson": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Success"
-                }
-            }
-        },
-        "authentication.User": {
+        "Todo.User": {
             "type": "object",
             "required": [
                 "password",

@@ -1,4 +1,4 @@
-package authentication
+package Todo
 
 import (
 	"errors"
@@ -6,7 +6,9 @@ import (
 	http "net/http"
 	"strconv"
 	"time"
+	auth "todo-web-api/Authentication"
 	models "todo-web-api/Models"
+
 	s "todo-web-api/Storage"
 
 	gin "github.com/gin-gonic/gin"
@@ -43,7 +45,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	var isLoggedIn = IsTokenActive(req.Username)
+	var isLoggedIn = auth.IsTokenActive(req.Username)
 	if isLoggedIn {
 		errMessage = "User is already logged in"
 		log.Println(errMessage, errors.New(errMessage))
@@ -69,7 +71,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := GenerateAccessToken(existingAccount.Username, existingAccount.Id)
+	token, err := auth.GenerateAccessToken(existingAccount.Username, existingAccount.Id)
 	if err != nil {
 		log.Println(err.Error(), err)
 
@@ -86,7 +88,7 @@ func Login(c *gin.Context) {
 		true,
 		true,
 	)
-	SaveToken(existingAccount.Username, token)
+	auth.SaveToken(existingAccount.Username, token)
 	resp := ResponseJson{Message: "Successful Login"}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)

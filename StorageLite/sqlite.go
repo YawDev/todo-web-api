@@ -1,4 +1,4 @@
-package sqlite_db
+package StorageLite
 
 import (
 	"log"

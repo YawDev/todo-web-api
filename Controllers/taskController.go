@@ -12,9 +12,6 @@ import (
 	gin "github.com/gin-gonic/gin"
 )
 
-type ResponseJson struct {
-	Message string `json:"message" example:"Success"`
-}
 type SaveTask struct {
 	Title       string `binding:"required"`
 	Description string

@@ -13,8 +13,8 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
-	app "todo-web-api/App"
 	auth "todo-web-api/Authentication"
+	app "todo-web-api/Controllers"
 	s "todo-web-api/Storage"
 
 	docs "todo-web-api/docs"
@@ -60,9 +60,9 @@ func main() {
 }
 
 func RouteSetup(r *gin.RouterGroup) {
-	r.POST("/Login", auth.Login)
-	r.POST("/Register", auth.Register)
-	r.GET("/GetUser/:id", auth.GetUserById)
+	r.POST("/Login", app.Login)
+	r.POST("/Register", app.Register)
+	r.GET("/GetUser/:id", app.GetUserById)
 	r.POST("/CreateList/:id", auth.AuthMiddleware(), app.CreateListForUser)
 	r.DELETE("/DeleteList/:id", auth.AuthMiddleware(), app.DeleteList)
 	r.GET("/GetList/:userid", app.GetListByUserId)

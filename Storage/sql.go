@@ -32,7 +32,7 @@ func (Db *StoreDbManager) Connect() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/Todo?charset=utf8mb4&parseTime=True&loc=Local", User, Password, Host, Port)
 	Context, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		errMsg := "SQL Connection Successful"
+		errMsg := "SQL Connection failed"
 		log.Println(errMsg)
 		panic(errMsg)
 	}

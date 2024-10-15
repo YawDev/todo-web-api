@@ -4,7 +4,7 @@ import (
 	"os"
 	"strconv"
 	models "todo-web-api/Models"
-	sql "todo-web-api/sqlite_db"
+	sqlite "todo-web-api/StorageLite"
 
 	"github.com/joho/godotenv"
 )
@@ -35,10 +35,10 @@ func ConfigureDb() {
 }
 
 func Sqlite() {
-	UserManager = &sql.UserStoreLite{}
-	TaskManager = &sql.TaskStoreLite{}
-	ListManager = &sql.ListStoreLite{}
-	StoreManager = &sql.StoreManagerLite{}
+	UserManager = &sqlite.UserStoreLite{}
+	TaskManager = &sqlite.TaskStoreLite{}
+	ListManager = &sqlite.ListStoreLite{}
+	StoreManager = &sqlite.StoreManagerLite{}
 }
 
 func SqlServer() {

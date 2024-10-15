@@ -2,6 +2,7 @@ package Storage
 
 import (
 	"fmt"
+	"log"
 	"os"
 	models "todo-web-api/Models"
 
@@ -31,10 +32,11 @@ func (Db *StoreDbManager) Connect() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/Todo?charset=utf8mb4&parseTime=True&loc=Local", User, Password, Host, Port)
 	Context, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("SQL connection failed.")
+		errMsg := "SQL Connection Successful"
+		log.Println(errMsg)
+		panic(errMsg)
 	}
-
-	fmt.Println("SQL Connection Successful")
+	log.Println("SQL Connection Successful")
 	Db.MigrateModels(Context)
 }
 

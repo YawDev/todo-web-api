@@ -10,6 +10,7 @@
 package main
 
 import (
+	"log"
 	"os/exec"
 	"runtime"
 	app "todo-web-api/App"
@@ -51,6 +52,7 @@ func main() {
 	go func() {
 		err := openBrowser("http://localhost:8080/swagger/index.html")
 		if err != nil {
+			log.Println(err.Error(), err)
 			panic(err)
 		}
 	}()

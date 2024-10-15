@@ -2,7 +2,7 @@ package Storage
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	models "todo-web-api/Models"
 
 	"gorm.io/gorm"
@@ -21,15 +21,20 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 	result := Context.First(&task, id)
 
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false, errors.New("task record not found")
+		err := errors.New("task record not found")
+		log.Println(err.Error(), err)
+		return false, err
 	} else if result.Error != nil {
-		fmt.Println("Something went wrong.")
-		return false, errors.New("something went wrong")
+		err := errors.New("something went wrong")
+		log.Println(err.Error(), err)
+		return false, err
 	}
 
 	result = Context.Delete(&task)
 	if result.Error != nil {
-		return false, errors.New("something went wrong")
+		err := errors.New("something went wrong")
+		log.Println(err.Error(), err)
+		return false, err
 	}
 	return true, nil
 }
@@ -38,9 +43,13 @@ func (T *TaskStore) GetTask(id int) (*models.Task, error) {
 	var task models.Task
 	result := Context.First(&task, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("task record not found")
+		err := errors.New("task record not found")
+		log.Println(err.Error(), result.Error)
+		return nil, err
 	} else if result.Error != nil {
-		return nil, errors.New("something went wrong")
+		err := errors.New("something went wrong")
+		log.Println(err.Error(), result.Error)
+		return nil, err
 	}
 	return &task, nil
 }

@@ -6,6 +6,7 @@ import (
 	"todo-web-api/Models"
 	"todo-web-api/Storage"
 
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
@@ -58,31 +59,40 @@ func Test_Get_List_By_Id(t *testing.T) {
 	}
 }
 
-// func Test_Delete_List(t *testing.T) {
-// 	db, mock := Mock_Db_Setup()
-// 	//defer mock.ExpectClose()
-// 	Storage.Context = db
+func Test_Delete_List(t *testing.T) {
+	db, mock := Mock_Db_Setup()
+	//defer mock.ExpectClose()
 
-// 	listID := 1
+	Storage.Context = db
 
-// 	// Mock the fetch operation to ensure the list is found
-// 	mock.ExpectQuery("*").
-// 		WithArgs(listID).
-// 		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "created_at"}).
-// 			AddRow(listID, 1, time.Now())) // Mock the row returned by First
+	listID := 1
+	userID := 1
+	createdAt := time.Now()
 
-// 	// Mock the delete operation
-// 	mock.ExpectExec("DELETE FROM `lists` WHERE `lists`.`id` = \\?").
-// 		WithArgs(listID).
-// 		WillReturnResult(sqlmock.NewResult(0, 1)) // Indicate that 1 row was deleted
+	mock.ExpectQuery("SELECT \\* FROM `lists` WHERE `lists`.`id` = \\? ORDER BY `lists`.`id` LIMIT \\?").
+		WithArgs(1, 1).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "created_at"}).
+			AddRow(listID, userID, createdAt))
 
-// 	_, err := Storage.ListManager.DeleteList(listID)
+	mock.ExpectBegin()
+	mock.ExpectExec("DELETE FROM `lists` WHERE `lists`.`id` = \\?").
+		WithArgs(listID).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
 
-// 	if err != nil {
-// 		t.Errorf("Failed to delete list: %s", err)
-// 	}
+	success, err := Storage.ListManager.DeleteList(1)
 
-// 	if err := mock.ExpectationsWereMet(); err != nil {
-// 		t.Errorf("Failed to delete list: %s", err)
-// 	}
-// }
+	if err != nil {
+		t.Errorf("Failed to fetch list: %s", err)
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Failed to fetch list: %s", err)
+	}
+
+	if success {
+		t.Log("Delete successful")
+	}
+
+	assert.True(t, success)
+}

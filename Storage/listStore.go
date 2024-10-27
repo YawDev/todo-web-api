@@ -2,6 +2,7 @@ package Storage
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	models "todo-web-api/Models"
 
@@ -13,8 +14,9 @@ type ListStore struct {
 
 func (L *ListStore) CreateList(list *models.List) (ID int, err error) {
 	result := Context.Create(&list)
-	log.Println(result.Error.Error(), result.Error)
-
+	if result.Error != nil {
+		log.Println(result.Error.Error(), result.Error)
+	}
 	return list.Id, result.Error
 }
 
@@ -34,6 +36,7 @@ func (L *ListStore) DeleteList(id int) (success bool, err error) {
 	}
 
 	result = Context.Delete(&list)
+	fmt.Println(result.Statement.Vars...)
 	if result.Error != nil {
 		errMsg := "something went wrong while deleting list"
 		log.Println(errMsg, result.Error)

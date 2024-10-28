@@ -26,7 +26,7 @@ func (U *UserStore) CreateUser(user *models.User) (ID int, err error) {
 		return 0, userQuery.Error
 	}
 
-	result := Context.Create(&user)
+	result := Context.Debug().Create(&user)
 	return user.Id, result.Error
 }
 

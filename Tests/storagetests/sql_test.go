@@ -1,4 +1,4 @@
-package Tests
+package storagetests
 
 import (
 	"todo-web-api/Storage"

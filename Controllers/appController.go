@@ -1,4 +1,4 @@
-package Todo
+package Controllers
 
 import (
 	gin "github.com/gin-gonic/gin"

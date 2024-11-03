@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 	auth "todo-web-api/Authentication"
-	models "todo-web-api/Models"
+	models "todo-web-api/models"
 
 	s "todo-web-api/Storage"
 

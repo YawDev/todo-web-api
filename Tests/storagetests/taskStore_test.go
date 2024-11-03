@@ -3,8 +3,8 @@ package storagetests
 import (
 	"testing"
 	"time"
-	"todo-web-api/Models"
 	"todo-web-api/Storage"
+	"todo-web-api/models"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
@@ -16,7 +16,7 @@ func Test_Create_Task(t *testing.T) {
 
 	Storage.Context = db
 
-	task := Models.Task{
+	task := models.Task{
 		Id:          1,
 		Title:       "New Task",
 		Description: "This is a task description",

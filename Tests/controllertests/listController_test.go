@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	app "todo-web-api/Controllers"
-	"todo-web-api/Storage"
 	m "todo-web-api/Tests/mockmanagers"
+	app "todo-web-api/controllers"
 	"todo-web-api/models"
+	"todo-web-api/storage"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -37,8 +37,8 @@ func InitManagersDefault() {
 
 func setupListRouters(listManager m.IListMockManager, userManager m.IUserMockManager) *gin.Engine {
 	r := gin.Default()
-	Storage.ListManager = listManager
-	Storage.UserManager = userManager
+	storage.ListManager = listManager
+	storage.UserManager = userManager
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("/PING")

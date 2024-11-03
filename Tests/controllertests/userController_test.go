@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	app "todo-web-api/Controllers"
-	"todo-web-api/Storage"
 	m "todo-web-api/Tests/mockmanagers"
+	app "todo-web-api/controllers"
 	"todo-web-api/models"
+	"todo-web-api/storage"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ type loginCase struct {
 
 func setupRouters(userManager m.IUserMockManager) *gin.Engine {
 	r := gin.Default()
-	Storage.UserManager = userManager
+	storage.UserManager = userManager
 	v1 := r.Group("/api/v1")
 	{
 		v1.POST("/Register", app.Register)
@@ -99,7 +99,6 @@ func login(l loginCase) (code int, errorMsg error) {
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, req)
-	// Assertions
 	return w.Code, nil
 }
 
@@ -122,7 +121,6 @@ func Test_Register_Url(t *testing.T) {
 
 	router.ServeHTTP(w, req)
 
-	// Assertions
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 

@@ -6,10 +6,10 @@ import (
 	http "net/http"
 	"strconv"
 	"time"
-	auth "todo-web-api/Authentication"
+	auth "todo-web-api/authentication"
 	models "todo-web-api/models"
 
-	s "todo-web-api/Storage"
+	s "todo-web-api/storage"
 
 	gin "github.com/gin-gonic/gin"
 	bcr "golang.org/x/crypto/bcrypt"

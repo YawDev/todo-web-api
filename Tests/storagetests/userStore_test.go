@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 	"time"
-	"todo-web-api/Storage"
 	"todo-web-api/models"
+	"todo-web-api/storage"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
@@ -22,7 +22,7 @@ func Test_Create_User_Successful(t *testing.T) {
 		Password:  "Test_PW1",
 	}
 
-	Storage.Context = db
+	storage.Context = db
 	mock.ExpectQuery("SELECT \\* FROM `users` WHERE Username = \\? ORDER BY `users`.`id` LIMIT \\?").
 		WithArgs(newUser.Username, 1).
 		WillReturnError(gorm.ErrRecordNotFound)
@@ -34,7 +34,7 @@ func Test_Create_User_Successful(t *testing.T) {
 
 	mock.ExpectCommit()
 
-	success, _ := Storage.UserManager.CreateUser(newUser)
+	success, _ := storage.UserManager.CreateUser(newUser)
 
 	assert.Equal(t, success, 1)
 
@@ -49,13 +49,13 @@ func Test_Create_UserExists(t *testing.T) {
 
 	testUser := models.User{Id: 1, Username: "NewUser", CreatedAt: time.Now()}
 
-	Storage.Context = db
+	storage.Context = db
 
 	mock.ExpectQuery("SELECT \\* FROM `users` WHERE Username = \\? ORDER BY `users`.`id` LIMIT \\?").
 		WithArgs(testUser.Username, 1).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "username"}).AddRow(testUser.Id, testUser.Username))
 
-	success, err := Storage.UserManager.CreateUser(&testUser)
+	success, err := storage.UserManager.CreateUser(&testUser)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -74,13 +74,13 @@ func Test_Get_User(t *testing.T) {
 
 	testUser := models.User{Id: 1, Username: "NewUser"}
 
-	Storage.Context = db
+	storage.Context = db
 
 	mock.ExpectQuery("SELECT \\* FROM `users` WHERE `users`.`id` = \\? ORDER BY `users`.`id` LIMIT \\?").
 		WithArgs(testUser.Id, 1).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "username"}).AddRow(testUser.Id, testUser.Username))
 
-	user, _ := Storage.UserManager.GetUser(testUser.Id)
+	user, _ := storage.UserManager.GetUser(testUser.Id)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -95,13 +95,13 @@ func Test_Get_UserNotFound(t *testing.T) {
 	defer mock.ExpectClose()
 
 	Id := 1
-	Storage.Context = db
+	storage.Context = db
 
 	mock.ExpectQuery("SELECT \\* FROM `users` WHERE `users`.`id` = \\? ORDER BY `users`.`id` LIMIT \\?").
 		WithArgs(Id, 1).
 		WillReturnError(gorm.ErrRecordNotFound)
 
-	_, errMsg := Storage.UserManager.GetUser(1)
+	_, errMsg := storage.UserManager.GetUser(1)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -120,12 +120,12 @@ func Test_Find_Existing_Account_Not_Found(t *testing.T) {
 		Password:  "Test_PW1",
 	}
 
-	Storage.Context = db
+	storage.Context = db
 	mock.ExpectQuery("SELECT \\* FROM `users` WHERE Username = \\? ORDER BY `users`.`id` LIMIT \\?").
 		WithArgs(newUser.Username, 1).
 		WillReturnError(gorm.ErrRecordNotFound)
 
-	_, err := Storage.UserManager.FindExistingAccount(newUser.Username, newUser.Password)
+	_, err := storage.UserManager.FindExistingAccount(newUser.Username, newUser.Password)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -144,12 +144,12 @@ func Test_Find_Existing_Account(t *testing.T) {
 		Password:  "Test_PW1",
 	}
 
-	Storage.Context = db
+	storage.Context = db
 	mock.ExpectQuery("SELECT \\* FROM `users` WHERE Username = \\? ORDER BY `users`.`id` LIMIT \\?").
 		WithArgs(newUser.Username, 1).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "username"}).AddRow(newUser.Id, newUser.Username))
 
-	user, _ := Storage.UserManager.FindExistingAccount(newUser.Username, newUser.Password)
+	user, _ := storage.UserManager.FindExistingAccount(newUser.Username, newUser.Password)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)

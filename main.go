@@ -13,9 +13,9 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
-	auth "todo-web-api/Authentication"
-	app "todo-web-api/Controllers"
-	s "todo-web-api/Storage"
+	auth "todo-web-api/authentication"
+	app "todo-web-api/controllers"
+	s "todo-web-api/storage"
 
 	docs "todo-web-api/docs"
 

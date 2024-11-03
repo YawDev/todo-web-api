@@ -1,10 +1,10 @@
-package Storage
+package storage
 
 import (
 	"os"
 	"strconv"
-	sqlite "todo-web-api/StorageLite"
 	models "todo-web-api/models"
+	sqlite "todo-web-api/storagelite"
 
 	"github.com/joho/godotenv"
 )

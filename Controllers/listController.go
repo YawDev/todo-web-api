@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"errors"
@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	models "todo-web-api/Models"
 	s "todo-web-api/Storage"
+	models "todo-web-api/models"
 
 	gin "github.com/gin-gonic/gin"
 )

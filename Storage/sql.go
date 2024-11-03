@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	models "todo-web-api/Models"
+	models "todo-web-api/models"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"

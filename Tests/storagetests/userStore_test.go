@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 	"time"
-	"todo-web-api/Models"
 	"todo-web-api/Storage"
+	"todo-web-api/models"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
@@ -15,7 +15,7 @@ import (
 func Test_Create_User_Successful(t *testing.T) {
 	db, mock := Mock_Db_Setup()
 
-	newUser := &Models.User{
+	newUser := &models.User{
 		Id:        1,
 		Username:  "TestUser",
 		CreatedAt: time.Now(),
@@ -47,7 +47,7 @@ func Test_Create_UserExists(t *testing.T) {
 	db, mock := Mock_Db_Setup()
 	defer mock.ExpectClose()
 
-	testUser := Models.User{Id: 1, Username: "NewUser", CreatedAt: time.Now()}
+	testUser := models.User{Id: 1, Username: "NewUser", CreatedAt: time.Now()}
 
 	Storage.Context = db
 
@@ -72,7 +72,7 @@ func Test_Get_User(t *testing.T) {
 	db, mock := Mock_Db_Setup()
 	defer mock.ExpectClose()
 
-	testUser := Models.User{Id: 1, Username: "NewUser"}
+	testUser := models.User{Id: 1, Username: "NewUser"}
 
 	Storage.Context = db
 
@@ -113,7 +113,7 @@ func Test_Get_UserNotFound(t *testing.T) {
 func Test_Find_Existing_Account_Not_Found(t *testing.T) {
 	db, mock := Mock_Db_Setup()
 
-	newUser := &Models.User{
+	newUser := &models.User{
 		Id:        1,
 		Username:  "TestUser",
 		CreatedAt: time.Now(),
@@ -137,7 +137,7 @@ func Test_Find_Existing_Account_Not_Found(t *testing.T) {
 func Test_Find_Existing_Account(t *testing.T) {
 	db, mock := Mock_Db_Setup()
 
-	newUser := &Models.User{
+	newUser := &models.User{
 		Id:        1,
 		Username:  "TestUser",
 		CreatedAt: time.Now(),

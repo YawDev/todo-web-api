@@ -3,8 +3,8 @@ package storagetests
 import (
 	"testing"
 	"time"
-	"todo-web-api/Models"
 	"todo-web-api/Storage"
+	"todo-web-api/models"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
@@ -22,7 +22,7 @@ func Test_Create_List(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
-	_, err := Storage.ListManager.CreateList(&Models.List{UserId: 1, Id: 1, CreatedAt: time.Now()})
+	_, err := Storage.ListManager.CreateList(&models.List{UserId: 1, Id: 1, CreatedAt: time.Now()})
 
 	if err != nil {
 		t.Errorf("Failed to create list: %s", err)

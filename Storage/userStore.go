@@ -3,7 +3,7 @@ package Storage
 import (
 	"errors"
 	"log"
-	models "todo-web-api/Models"
+	models "todo-web-api/models"
 
 	"gorm.io/gorm"
 )

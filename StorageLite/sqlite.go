@@ -2,7 +2,7 @@ package StorageLite
 
 import (
 	"log"
-	models "todo-web-api/Models"
+	models "todo-web-api/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

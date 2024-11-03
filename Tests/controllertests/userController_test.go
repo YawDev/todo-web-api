@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 	app "todo-web-api/Controllers"
-	"todo-web-api/Models"
 	"todo-web-api/Storage"
 	m "todo-web-api/Tests/mockmanagers"
+	"todo-web-api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +29,7 @@ func setupRouters(userManager m.IUserMockManager) *gin.Engine {
 }
 
 func Test_Register_Url(t *testing.T) {
-	router := setupRouters(&m.MockUserManager{CreateUserFn: func(user *Models.User) (int, error) {
+	router := setupRouters(&m.MockUserManager{CreateUserFn: func(user *models.User) (int, error) {
 		return 1, nil
 	}})
 
@@ -52,12 +52,12 @@ func Test_Register_Url(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	router := setupRouters(&m.MockUserManager{GetUserFn: func(id int) (*Models.User, error) {
-		return &Models.User{}, nil
+	router := setupRouters(&m.MockUserManager{GetUserFn: func(id int) (*models.User, error) {
+		return &models.User{}, nil
 	}})
 	w := httptest.NewRecorder()
 
-	user := Models.User{}
+	user := models.User{}
 	json, _ := json.Marshal(user)
 	req, _ := http.NewRequest("GET", fmt.Sprintf("/GetUser/%d", 1), strings.NewReader(string(json)))
 	router.ServeHTTP(w, req)
@@ -66,12 +66,12 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestExistingUser(t *testing.T) {
-	router := setupRouters(&m.MockUserManager{GetUserFn: func(id int) (*Models.User, error) {
-		return &Models.User{}, nil
+	router := setupRouters(&m.MockUserManager{GetUserFn: func(id int) (*models.User, error) {
+		return &models.User{}, nil
 	}})
 	w := httptest.NewRecorder()
 
-	user := Models.User{}
+	user := models.User{}
 	json, _ := json.Marshal(user)
 	req, _ := http.NewRequest("GET", fmt.Sprintf("/GetUser/%d", 1), strings.NewReader(string(json)))
 	router.ServeHTTP(w, req)

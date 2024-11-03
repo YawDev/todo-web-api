@@ -1,7 +1,7 @@
 package storagetests
 
 import (
-	"todo-web-api/Storage"
+	"todo-web-api/storage"
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"gorm.io/driver/mysql"
@@ -29,6 +29,6 @@ func Mock_Db_Setup() (*gorm.DB, sqlmock.Sqlmock) {
 }
 
 func CreateStores() {
-	Storage.SqlServer()
+	storage.SqlServer()
 
 }

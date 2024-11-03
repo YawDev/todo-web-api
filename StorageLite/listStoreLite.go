@@ -1,4 +1,4 @@
-package StorageLite
+package storagelite
 
 import (
 	"errors"

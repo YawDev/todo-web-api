@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	m "todo-web-api/Tests/mockmanagers"
 	app "todo-web-api/controllers"
 	"todo-web-api/models"
 	"todo-web-api/storage"
+	m "todo-web-api/tests/mockmanagers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -88,7 +88,7 @@ func TestCreateListForUser(t *testing.T) {
 	req, _ := http.NewRequest("POST", fmt.Sprintf("/CreateList/%d", 1), strings.NewReader(string(json)))
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, 200, w.Code)
 }
 
 func TestCreateListForUser_NotFound(t *testing.T) {
@@ -104,7 +104,7 @@ func TestCreateListForUser_NotFound(t *testing.T) {
 	req, _ := http.NewRequest("POST", fmt.Sprintf("/CreateList/%d", 1), strings.NewReader(string(json)))
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, 400, w.Code)
 }
 
 func TestCreateList_AlreadyExists(t *testing.T) {

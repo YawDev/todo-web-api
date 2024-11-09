@@ -70,7 +70,7 @@ func RouteSetup(r *gin.RouterGroup) {
 	r.DELETE("/DeleteTask/:id", auth.AuthMiddleware(), app.DeleteTask)
 	r.PUT("/UpdateTask/:id", auth.AuthMiddleware(), app.UpdateTask)
 	r.PUT("/TaskCompleted/:id", auth.AuthMiddleware(), app.ChangeStatus)
-	r.GET("/Home", auth.AuthMiddleware(), app.Home)
+	r.GET("/Home", app.Home)
 }
 
 func openBrowser(url string) error {

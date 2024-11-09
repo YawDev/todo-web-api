@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	m "todo-web-api/Tests/mockmanagers"
 	app "todo-web-api/controllers"
 	"todo-web-api/models"
 	"todo-web-api/storage"
+	m "todo-web-api/tests/mockmanagers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

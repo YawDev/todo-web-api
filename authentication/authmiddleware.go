@@ -47,6 +47,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 		}
 
+		if _, ok := activeTokens[claims.Username]; !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "token unauthorized"})
+			c.Abort()
+		}
 		payload(claims, c)
 		c.Next()
 	}

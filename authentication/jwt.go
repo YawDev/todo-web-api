@@ -28,6 +28,13 @@ func IsTokenActive(username string) bool {
 	return exists
 }
 
+func IsRefreshTokenActive(username string) bool {
+	mutex.Lock()
+	defer mutex.Unlock()
+	_, exists := refreshTokens[username]
+	return exists
+}
+
 func GenerateAccessToken(username string, userId int) (string, error) {
 
 	claims := &Claims{

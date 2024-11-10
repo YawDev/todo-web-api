@@ -1,7 +1,7 @@
 // @BasePath					/api/v1
-// @title						Todo Web API
+// @title						Todo.Service
 // @version					1.0
-// @description				Todo Web API with JWT Auth
+// @description				Todo.Service
 // @host						localhost:8080
 // @BasePath					/api/v1
 // @securityDefinitions.apikey	BearerAuth
@@ -70,7 +70,7 @@ func RouteSetup(r *gin.RouterGroup) {
 	r.DELETE("/DeleteTask/:id", auth.AuthMiddleware(), app.DeleteTask)
 	r.PUT("/UpdateTask/:id", auth.AuthMiddleware(), app.UpdateTask)
 	r.PUT("/TaskCompleted/:id", auth.AuthMiddleware(), app.ChangeStatus)
-	r.POST("/GetRefreshToken", app.RefreshToken)
+	r.POST("/RefreshToken", app.RefreshToken)
 	r.POST("/Logout", auth.AuthMiddleware(), app.Logout)
 	r.GET("/Home", app.Home)
 }

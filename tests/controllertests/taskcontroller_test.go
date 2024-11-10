@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 	app "todo-web-api/controllers"
+	h "todo-web-api/helpers"
 	"todo-web-api/models"
 	"todo-web-api/storage"
 	m "todo-web-api/tests/mockmanagers"
@@ -19,7 +20,7 @@ import (
 
 type TaskCase struct {
 	id          int
-	request     *app.SaveTask
+	request     *h.SaveTask
 	listManager m.IListMockManager
 	taskManager m.ITaskMockManager
 }
@@ -40,7 +41,7 @@ func setupTasksRouters(listManager m.IListMockManager, taskManager m.ITaskMockMa
 }
 
 func Test_Task_Cases(t *testing.T) {
-	task := &app.SaveTask{
+	task := &h.SaveTask{
 		Description: "test_desc",
 		Title:       "test_task",
 	}
@@ -139,14 +140,14 @@ func Test_Task_Cases(t *testing.T) {
 			var err error
 
 			if strings.Contains(tt.name, "Add") {
-				ans, err = CreateTask(tt.input, &app.SaveTask{
+				ans, err = CreateTask(tt.input, &h.SaveTask{
 					Description: "test_desc",
 					Title:       "test_task",
 				})
 			} else if strings.Contains(tt.name, "Delete") {
 				ans, err = DeleteTask(tt.input)
 			} else {
-				ans, err = UpdateTask(tt.input, &app.SetStatus{
+				ans, err = UpdateTask(tt.input, &h.SetStatus{
 					IsCompleted: true,
 				})
 			}
@@ -162,7 +163,7 @@ func Test_Task_Cases(t *testing.T) {
 	}
 }
 
-func CreateTask(c TaskCase, s *app.SaveTask) (int, error) {
+func CreateTask(c TaskCase, s *h.SaveTask) (int, error) {
 	router := setupTasksRouters(c.listManager, c.taskManager)
 	w := httptest.NewRecorder()
 
@@ -183,7 +184,7 @@ func DeleteTask(c TaskCase) (int, error) {
 	return w.Code, nil
 }
 
-func UpdateTask(c TaskCase, s *app.SetStatus) (int, error) {
+func UpdateTask(c TaskCase, s *h.SetStatus) (int, error) {
 	router := setupTasksRouters(c.listManager, c.taskManager)
 	w := httptest.NewRecorder()
 

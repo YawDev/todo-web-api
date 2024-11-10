@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 	auth "todo-web-api/authentication"
+	h "todo-web-api/helpers"
 	models "todo-web-api/models"
 
 	s "todo-web-api/storage"
@@ -15,15 +16,6 @@ import (
 	gin "github.com/gin-gonic/gin"
 	bcr "golang.org/x/crypto/bcrypt"
 )
-
-type User struct {
-	Username string `binding:"required"`
-	Password string `binding:"required"`
-}
-
-type ResponseJson struct {
-	Message string `json:"message" example:"Success"`
-}
 
 // Login endpoint for Todo godoc
 //
@@ -33,12 +25,14 @@ type ResponseJson struct {
 //	@Description	Sign-In with user credentials, for generated access token
 //	@Accept			json
 //	@Produce		json
-//	@Param			Request	body		User			true	"Login Request"
-//	@Success		200		{object}	ResponseJson	"Successful"
+//	@Param			Request	body		h.User					true	"Login Request"
+//	@Success		200		{object}	h.SuccessResponse		"Successful"
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"			//	Failed		due	to	bad	request	(e.g., validation error)
+//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"	//	Server-side	failure
 //	@Router			/Login [post]
 func Login(c *gin.Context) {
 
-	var req User
+	var req h.User
 	var errMessage = ""
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println(err.Error())
@@ -50,7 +44,9 @@ func Login(c *gin.Context) {
 	if isLoggedIn {
 		errMessage = "User is already logged in"
 		log.Println(errMessage, errors.New(errMessage))
-		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status:  400,
+			Message: errMessage})
 		return
 	}
 
@@ -58,7 +54,9 @@ func Login(c *gin.Context) {
 	if err != nil && err.Error() == "user not found" {
 
 		log.Println(err.Error(), err)
-		c.JSON(http.StatusBadRequest, ResponseJson{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status:  400,
+			Message: err.Error()})
 		return
 	}
 
@@ -68,7 +66,9 @@ func Login(c *gin.Context) {
 	if !matchingPassword {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, ResponseJson{Message: "Invalid Password Credentials"})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status:  400,
+			Message: "Invalid Password Credentials"})
 		return
 	}
 
@@ -76,7 +76,9 @@ func Login(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating access token."})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status:  500,
+			Message: "Error while generating access token."})
 		return
 	}
 
@@ -111,10 +113,12 @@ func Login(c *gin.Context) {
 
 	auth.SaveToken(existingAccount.Username, token)
 	auth.SaveRefreshToken(existingAccount.Username, refreshToken)
-	resp := ResponseJson{Message: "Successful Login"}
+	resp := h.SaveResponse{Status: 200,
+		Message: "Successful Login"}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
-	c.JSON(200, resp)
+	c.JSON(200,
+		resp)
 }
 
 // Register endpoint for Todo godoc
@@ -125,12 +129,14 @@ func Login(c *gin.Context) {
 //	@Description	Create User Account
 //	@Accept			json
 //	@Produce		json
-//	@Param			Request	body		User			true	"Login Request"
-//	@Success		200		{object}	ResponseJson	"Success"
+//	@Param			Request	body		h.User					true	"Login Request"
+//	@Success		200		{object}	h.SaveResponse			"Success"
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"
+//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Register [post]
 func Register(c *gin.Context) {
 
-	var req User
+	var req h.User
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println(err.Error(), err)
@@ -144,15 +150,19 @@ func Register(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "something went wrong",
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: "something went wrong",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User created successfully.",
-		"Id":      id,
+	c.JSON(http.StatusOK, h.SaveResponse{
+		Status: 200,
+
+		Message: "User created successfully.",
+		Id:      id,
 	})
 }
 
@@ -165,7 +175,10 @@ func Register(c *gin.Context) {
 //	@Param			id	path	int	true	"id"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	ResponseJson	"Success"
+//	@Success		200	{object}	h.UserResult			"Success"
+//	@Success		200	{object}	h.SuccessResponse		"Successful"
+//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/GetUser/{id} [get]
 func GetUserById(c *gin.Context) {
 	idParam := c.Param("id")
@@ -182,20 +195,22 @@ func GetUserById(c *gin.Context) {
 	if err != nil && err.Error() == "user not found" {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status:  400,
+			Message: err.Error(),
 		})
 	} else if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status:  500,
+			Message: err.Error(),
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"Username":  &user.Username,
-		"CreatedAt": &user.CreatedAt,
+	c.JSON(http.StatusOK, h.UserResult{
+		Username:  user.Username,
+		CreatedAt: user.CreatedAt,
 	})
 }
 
@@ -221,7 +236,10 @@ func RefreshToken(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating new access token."})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: "Error while generating new access token."})
 		return
 	}
 
@@ -239,7 +257,9 @@ func RefreshToken(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Success		200		{object}	ResponseJson	"Success"
+//	@Success		200	{object}	h.SuccessResponse		"Successful"
+//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Logout [post]
 func Logout(c *gin.Context) {
 	tokenStr := c.GetHeader("Authorization")
@@ -256,8 +276,9 @@ func Logout(c *gin.Context) {
 	auth.RemoveToken(claims.Username)
 	auth.RemoveRefreshToken(claims.Username)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User logout successfully.",
+	c.JSON(http.StatusOK, h.ErrorResponse{
+		Status:  200,
+		Message: "User logout successfully.",
 	})
 }
 

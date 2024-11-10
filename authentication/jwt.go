@@ -12,6 +12,7 @@ import (
 
 var jwtKey = []byte("Secret_Key")
 var activeTokens = make(map[string]string)
+var refreshTokens = make(map[string]string)
 var mutex = &sync.Mutex{}
 
 type Claims struct {
@@ -33,7 +34,7 @@ func GenerateAccessToken(username string, userId int) (string, error) {
 		Username: username,
 		UserID:   userId,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(15 * time.Minute)},
+			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(30 * time.Minute)},
 		},
 	}
 
@@ -47,11 +48,15 @@ func GenerateAccessToken(username string, userId int) (string, error) {
 	return tokenString, nil
 }
 
-func GenerateRefreshToken() (string, error) {
+func GenerateRefreshToken(userID int, userName string) (string, error) {
 
-	claims := jwt.StandardClaims{
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+	claims := &Claims{
+		UserID:   userID,
+		Username: userName,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "Todo-Service",
+			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(1 * time.Hour)},
+		},
 	}
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -91,8 +96,8 @@ func ParseToken(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
-func ParseRefreshToken(tokenStr string) (*jwt.Claims, error) {
-	var claims jwt.Claims
+func ParseRefreshToken(tokenStr string) (*Claims, error) {
+	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
@@ -114,7 +119,11 @@ func ParseRefreshToken(tokenStr string) (*jwt.Claims, error) {
 		return nil, err
 	}
 
-	return &claims, nil
+	if storedToken, ok := refreshTokens[claims.Username]; !ok || storedToken != tokenStr {
+		return nil, errors.New("refresh token not found or mismatched")
+	}
+
+	return claims, nil
 }
 
 func payload(claims *Claims, c *gin.Context) {
@@ -132,4 +141,16 @@ func RemoveToken(username string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	delete(activeTokens, username)
+}
+
+func SaveRefreshToken(username, token string) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	refreshTokens[username] = token
+}
+
+func RemoveRefreshToken(username string) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	delete(refreshTokens, username)
 }

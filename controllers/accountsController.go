@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	http "net/http"
 	"strconv"
@@ -79,6 +80,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	refreshToken, err := auth.GenerateRefreshToken(existingAccount.Id, existingAccount.Username)
+	if err != nil {
+		log.Println(err.Error(), err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating refresh token."})
+		return
+	}
+
 	c.SetCookie(
 		"access_token",
 		token,
@@ -88,7 +97,20 @@ func Login(c *gin.Context) {
 		true,
 		true,
 	)
+
+	cookie := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		Path:     "/",
+		Domain:   "",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+	}
+	http.SetCookie(c.Writer, cookie)
+
 	auth.SaveToken(existingAccount.Username, token)
+	auth.SaveRefreshToken(existingAccount.Username, refreshToken)
 	resp := ResponseJson{Message: "Successful Login"}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -174,6 +196,33 @@ func GetUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"Username":  &user.Username,
 		"CreatedAt": &user.CreatedAt,
+	})
+}
+
+func RefreshToken(c *gin.Context) {
+	tokenStr, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not fetch refresh from cookie"})
+		return
+	}
+
+	claims, err := auth.ParseRefreshToken(tokenStr)
+	if err != nil {
+		fmt.Println(tokenStr)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+
+	newAccessToken, err := auth.GenerateAccessToken(claims.Username, claims.UserID)
+	if err != nil {
+		log.Println(err.Error(), err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating new access token."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token": newAccessToken,
 	})
 }
 

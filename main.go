@@ -70,6 +70,7 @@ func RouteSetup(r *gin.RouterGroup) {
 	r.DELETE("/DeleteTask/:id", auth.AuthMiddleware(), app.DeleteTask)
 	r.PUT("/UpdateTask/:id", auth.AuthMiddleware(), app.UpdateTask)
 	r.PUT("/TaskCompleted/:id", auth.AuthMiddleware(), app.ChangeStatus)
+	r.POST("/GetRefreshToken", app.RefreshToken)
 	r.GET("/Home", app.Home)
 }
 

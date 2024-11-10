@@ -37,7 +37,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -72,7 +72,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.SaveTask"
+                            "$ref": "#/definitions/controllers.SaveTask"
                         }
                     }
                 ],
@@ -80,7 +80,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -114,7 +114,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -148,7 +148,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -177,7 +177,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -206,7 +206,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -226,7 +226,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -249,7 +249,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.User"
+                            "$ref": "#/definitions/controllers.User"
                         }
                     }
                 ],
@@ -257,7 +257,32 @@
                     "200": {
                         "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
+                        }
+                    }
+                }
+            }
+        },
+        "/Logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Logout User Account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -280,7 +305,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.User"
+                            "$ref": "#/definitions/controllers.User"
                         }
                     }
                 ],
@@ -288,7 +313,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -326,7 +351,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.SetStatus"
+                            "$ref": "#/definitions/controllers.SetStatus"
                         }
                     }
                 ],
@@ -334,7 +359,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -369,7 +394,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.SaveTask"
+                            "$ref": "#/definitions/controllers.SaveTask"
                         }
                     }
                 ],
@@ -377,7 +402,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -385,7 +410,7 @@
         }
     },
     "definitions": {
-        "Todo.ResponseJson": {
+        "controllers.ResponseJson": {
             "type": "object",
             "properties": {
                 "message": {
@@ -394,7 +419,7 @@
                 }
             }
         },
-        "Todo.SaveTask": {
+        "controllers.SaveTask": {
             "type": "object",
             "required": [
                 "title"
@@ -408,7 +433,7 @@
                 }
             }
         },
-        "Todo.SetStatus": {
+        "controllers.SetStatus": {
             "type": "object",
             "required": [
                 "isCompleted"
@@ -419,7 +444,7 @@
                 }
             }
         },
-        "Todo.User": {
+        "controllers.User": {
             "type": "object",
             "required": [
                 "password",

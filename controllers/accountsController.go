@@ -6,6 +6,7 @@ import (
 	"log"
 	http "net/http"
 	"strconv"
+	"strings"
 	"time"
 	auth "todo-web-api/authentication"
 	models "todo-web-api/models"
@@ -223,6 +224,39 @@ func RefreshToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": newAccessToken,
+	})
+}
+
+// Logout endpoint for Todo godoc
+//
+//	@BasePath	/api/v1
+//	@Summary	Logout
+//	@Schemes
+//	@Description	Logout User Account
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200		{object}	ResponseJson	"Success"
+//	@Router			/Logout [post]
+func Logout(c *gin.Context) {
+	tokenStr := c.GetHeader("Authorization")
+	fmt.Println(tokenStr)
+	if tokenStr == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "No token provided."})
+	}
+
+	tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
+	claims, err := auth.ParseToken(tokenStr)
+	fmt.Println(tokenStr)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
+	}
+
+	auth.RemoveToken(claims.Username)
+	auth.RemoveRefreshToken(claims.Username)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User logout successfully.",
 	})
 }
 

@@ -43,7 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -78,7 +78,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.SaveTask"
+                            "$ref": "#/definitions/controllers.SaveTask"
                         }
                     }
                 ],
@@ -86,7 +86,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -120,7 +120,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -154,7 +154,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -183,7 +183,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -212,7 +212,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -232,7 +232,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -255,7 +255,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.User"
+                            "$ref": "#/definitions/controllers.User"
                         }
                     }
                 ],
@@ -263,7 +263,32 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
+                        }
+                    }
+                }
+            }
+        },
+        "/Logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Logout User Account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -286,7 +311,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.User"
+                            "$ref": "#/definitions/controllers.User"
                         }
                     }
                 ],
@@ -294,7 +319,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -332,7 +357,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.SetStatus"
+                            "$ref": "#/definitions/controllers.SetStatus"
                         }
                     }
                 ],
@@ -340,7 +365,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -375,7 +400,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Todo.SaveTask"
+                            "$ref": "#/definitions/controllers.SaveTask"
                         }
                     }
                 ],
@@ -383,7 +408,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Todo.ResponseJson"
+                            "$ref": "#/definitions/controllers.ResponseJson"
                         }
                     }
                 }
@@ -391,7 +416,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "Todo.ResponseJson": {
+        "controllers.ResponseJson": {
             "type": "object",
             "properties": {
                 "message": {
@@ -400,7 +425,7 @@ const docTemplate = `{
                 }
             }
         },
-        "Todo.SaveTask": {
+        "controllers.SaveTask": {
             "type": "object",
             "required": [
                 "title"
@@ -414,7 +439,7 @@ const docTemplate = `{
                 }
             }
         },
-        "Todo.SetStatus": {
+        "controllers.SetStatus": {
             "type": "object",
             "required": [
                 "isCompleted"
@@ -425,7 +450,7 @@ const docTemplate = `{
                 }
             }
         },
-        "Todo.User": {
+        "controllers.User": {
             "type": "object",
             "required": [
                 "password",

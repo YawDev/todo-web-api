@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	http "net/http"
 	"strconv"
@@ -209,8 +208,12 @@ func RefreshToken(c *gin.Context) {
 
 	claims, err := auth.ParseRefreshToken(tokenStr)
 	if err != nil {
-		fmt.Println(tokenStr)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+
+	if !auth.IsRefreshTokenActive(claims.Username) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "refresh token unauthorized"})
 		return
 	}
 

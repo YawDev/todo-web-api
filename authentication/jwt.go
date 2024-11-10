@@ -34,6 +34,7 @@ func GenerateAccessToken(username string, userId int) (string, error) {
 		Username: username,
 		UserID:   userId,
 		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "Todo-Service",
 			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(30 * time.Minute)},
 		},
 	}

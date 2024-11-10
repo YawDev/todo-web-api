@@ -1,12 +1,12 @@
 basePath: /api/v1
 definitions:
-  Todo.ResponseJson:
+  controllers.ResponseJson:
     properties:
       message:
         example: Success
         type: string
     type: object
-  Todo.SaveTask:
+  controllers.SaveTask:
     properties:
       description:
         type: string
@@ -15,14 +15,14 @@ definitions:
     required:
     - title
     type: object
-  Todo.SetStatus:
+  controllers.SetStatus:
     properties:
       isCompleted:
         type: boolean
     required:
     - isCompleted
     type: object
-  Todo.User:
+  controllers.User:
     properties:
       password:
         type: string
@@ -56,7 +56,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       security:
       - BearerAuth: []
       summary: Create List
@@ -76,14 +76,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/Todo.SaveTask'
+          $ref: '#/definitions/controllers.SaveTask'
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       security:
       - BearerAuth: []
       summary: Create Task
@@ -104,7 +104,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       security:
       - BearerAuth: []
       summary: Delete List
@@ -125,7 +125,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       security:
       - BearerAuth: []
       summary: Delete Task
@@ -146,7 +146,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       summary: Get List
   /GetUser/{id}:
     get:
@@ -165,7 +165,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       summary: GetUserById
   /Home:
     get:
@@ -178,7 +178,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       summary: Home
   /Login:
     post:
@@ -191,15 +191,30 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/Todo.User'
+          $ref: '#/definitions/controllers.User'
       produces:
       - application/json
       responses:
         "200":
           description: Successful
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       summary: Login
+  /Logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout User Account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/controllers.ResponseJson'
+      security:
+      - BearerAuth: []
+      summary: Logout
   /Register:
     post:
       consumes:
@@ -211,14 +226,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/Todo.User'
+          $ref: '#/definitions/controllers.User'
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       summary: Register
   /TaskCompleted/{id}:
     put:
@@ -236,14 +251,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/Todo.SetStatus'
+          $ref: '#/definitions/controllers.SetStatus'
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       security:
       - BearerAuth: []
       - BearerAuth: []
@@ -264,14 +279,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/Todo.SaveTask'
+          $ref: '#/definitions/controllers.SaveTask'
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/Todo.ResponseJson'
+            $ref: '#/definitions/controllers.ResponseJson'
       security:
       - BearerAuth: []
       summary: Update Task

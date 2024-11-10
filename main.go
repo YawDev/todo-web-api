@@ -71,6 +71,7 @@ func RouteSetup(r *gin.RouterGroup) {
 	r.PUT("/UpdateTask/:id", auth.AuthMiddleware(), app.UpdateTask)
 	r.PUT("/TaskCompleted/:id", auth.AuthMiddleware(), app.ChangeStatus)
 	r.POST("/GetRefreshToken", app.RefreshToken)
+	r.POST("/Logout", auth.AuthMiddleware(), app.Logout)
 	r.GET("/Home", app.Home)
 }
 

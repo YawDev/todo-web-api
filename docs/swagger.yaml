@@ -1,12 +1,45 @@
 basePath: /api/v1
 definitions:
-  controllers.ResponseJson:
+  helpers.BadRequestResponse:
     properties:
       message:
-        example: Success
+        example: Bad request
         type: string
+      status:
+        example: 400
+        type: integer
     type: object
-  controllers.SaveTask:
+  helpers.DeleteResult:
+    properties:
+      message:
+        example: Successfully deleted
+        type: string
+      status:
+        example: 200
+        type: integer
+      success:
+        type: boolean
+    type: object
+  helpers.ErrorResponse:
+    properties:
+      message:
+        example: Something went wrong
+        type: string
+      status:
+        example: 500
+        type: integer
+    type: object
+  helpers.SaveResponse:
+    properties:
+      id:
+        type: integer
+      message:
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  helpers.SaveTask:
     properties:
       description:
         type: string
@@ -15,14 +48,23 @@ definitions:
     required:
     - title
     type: object
-  controllers.SetStatus:
+  helpers.SetStatus:
     properties:
       isCompleted:
         type: boolean
     required:
     - isCompleted
     type: object
-  controllers.User:
+  helpers.SuccessResponse:
+    properties:
+      message:
+        example: success
+        type: string
+      status:
+        example: "200"
+        type: string
+    type: object
+  helpers.User:
     properties:
       password:
         type: string
@@ -32,11 +74,18 @@ definitions:
     - password
     - username
     type: object
+  helpers.UserResult:
+    properties:
+      createdAt:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
-  description: Todo Web API with JWT Auth
-  title: Todo Web API
+  description: Todo.Service
+  title: Todo.Service
   version: "1.0"
 paths:
   /CreateList/{id}:
@@ -54,9 +103,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SaveResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create List
@@ -76,14 +134,23 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/controllers.SaveTask'
+          $ref: '#/definitions/helpers.SaveTask'
       produces:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create Task
@@ -102,9 +169,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.DeleteResult'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete List
@@ -123,9 +199,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.DeleteResult'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Delete Task
@@ -144,9 +229,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       summary: Get List
   /GetUser/{id}:
     get:
@@ -163,9 +257,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       summary: GetUserById
   /Login:
     post:
@@ -178,14 +281,23 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/controllers.User'
+          $ref: '#/definitions/helpers.User'
       produces:
       - application/json
       responses:
         "200":
           description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t\t\t//\tFailed\t\tdue\tto\tbad\trequest\t(e.g.,
+            validation error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: "Internal Server Error\"\t//\tServer-side\tfailure"
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       summary: Login
   /Logout:
     post:
@@ -196,9 +308,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Logout
@@ -213,14 +334,22 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/controllers.User'
+          $ref: '#/definitions/helpers.User'
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       summary: Register
   /TaskCompleted/{id}:
     put:
@@ -238,14 +367,23 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/controllers.SetStatus'
+          $ref: '#/definitions/helpers.SetStatus'
       produces:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       - BearerAuth: []
@@ -266,14 +404,23 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/controllers.SaveTask'
+          $ref: '#/definitions/helpers.SaveTask'
       produces:
       - application/json
       responses:
         "200":
-          description: Success
+          description: Successful
           schema:
-            $ref: '#/definitions/controllers.ResponseJson'
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update Task

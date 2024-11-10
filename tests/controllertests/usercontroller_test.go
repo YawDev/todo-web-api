@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 	app "todo-web-api/controllers"
+	h "todo-web-api/helpers"
 	"todo-web-api/models"
 	"todo-web-api/storage"
 	m "todo-web-api/tests/mockmanagers"
@@ -20,7 +21,7 @@ import (
 
 type loginCase struct {
 	existingUser *models.User
-	request      app.User
+	request      h.User
 	userManager  m.IUserMockManager
 }
 
@@ -50,7 +51,7 @@ func Test_Login_Cases(t *testing.T) {
 			"Successful login",
 			loginCase{
 				existingUser: existingUser,
-				request: app.User{
+				request: h.User{
 					Username: "u1",
 					Password: "testpass1",
 				},
@@ -64,7 +65,7 @@ func Test_Login_Cases(t *testing.T) {
 			"Failed login",
 			loginCase{
 				existingUser: existingUser,
-				request: app.User{
+				request: h.User{
 					Username: "u1",
 					Password: "wrongpw1",
 				},
@@ -107,7 +108,7 @@ func Test_Register_Url(t *testing.T) {
 		return 1, nil
 	}})
 
-	testUser := app.User{
+	testUser := h.User{
 		Username: "TEST_U1",
 		Password: "PW1",
 	}

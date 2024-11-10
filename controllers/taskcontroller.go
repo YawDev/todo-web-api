@@ -6,20 +6,12 @@ import (
 	"strconv"
 	"time"
 
+	h "todo-web-api/helpers"
 	models "todo-web-api/models"
 	s "todo-web-api/storage"
 
 	gin "github.com/gin-gonic/gin"
 )
-
-type SaveTask struct {
-	Title       string `binding:"required"`
-	Description string
-}
-
-type SetStatus struct {
-	IsCompleted bool `binding:"required"`
-}
 
 // Create Task endpoint for Todo
 // Create Task By ListId godoc
@@ -30,17 +22,22 @@ type SetStatus struct {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			listid	path		int				true	"List ID"
-//	@Param			Request	body		SaveTask		true	"Add Task"
-//	@Success		200		{object}	ResponseJson	"Success"
+//	@Param			listid	path		int						true	"List ID"
+//	@Param			Request	body		h.SaveTask				true	"Add Task"
+//	@Success		200		{object}	h.SuccessResponse		"Successful"
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/CreateTask/{listid} [post]
 func AddTaskToList(c *gin.Context) {
-	var req SaveTask
+	var req h.SaveTask
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 		return
 	}
 
@@ -49,33 +46,36 @@ func AddTaskToList(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
 	result, err := s.ListManager.GetList(id)
 	if err != nil && err.Error() == "list record not found" {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 	} else if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
 	task := &models.Task{Title: req.Title, Description: req.Description, ListId: id, CreatedAt: time.Now()}
 
 	s.TaskManager.CreateTask(task, id)
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Task created successfully.",
-		"Id":      result.Id,
-	})
+	c.JSON(http.StatusOK, h.SaveResponse{
+		Status:  200,
+		Message: "Task created successfully.",
+		Id:      result.Id})
 }
 
 // Delete Task For User endpoint for Todo godoc
@@ -86,8 +86,10 @@ func AddTaskToList(c *gin.Context) {
 //	@Description	Sign-In with user credentials, for generated access token
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int				true	"id"
-//	@Success		200	{object}	ResponseJson	"Success"
+//	@Param			id	path		int						true	"id"
+//	@Success		200	{object}	h.DeleteResult			"Successful"
+//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Security		BearerAuth
 //	@Router			/DeleteTask/{id} [delete]
 func DeleteTask(c *gin.Context) {
@@ -96,30 +98,34 @@ func DeleteTask(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
 	result, err := s.TaskManager.DeleteTask(id)
 	if err != nil && err.Error() == "task record not found" {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 	} else if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Task deleted successfully.",
-		"Success": result,
-	})
+	c.JSON(http.StatusOK, h.DeleteResult{
+		Status: 200,
+
+		Message: "Task deleted successfully.",
+		Success: result})
 }
 
 // Update Task For User endpoint for Todo godoc
@@ -131,17 +137,22 @@ func DeleteTask(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id		path		int				true	"id"
-//	@Param			Request	body		SaveTask		true	"Update Task"
-//	@Success		200		{object}	ResponseJson	"Success"
+//	@Param			id		path		int						true	"id"
+//	@Param			Request	body		h.SaveTask				true	"Update Task"
+//	@Success		200		{object}	h.SuccessResponse		"Successful"
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/UpdateTask/{id} [put]
 func UpdateTask(c *gin.Context) {
-	var req SaveTask
+	var req h.SaveTask
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 		return
 	}
 
@@ -159,16 +170,18 @@ func UpdateTask(c *gin.Context) {
 	if err != nil && err.Error() == "task record not found" {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 		return
 	} else if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 		return
 	}
 
@@ -182,9 +195,10 @@ func UpdateTask(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -203,17 +217,23 @@ func UpdateTask(c *gin.Context) {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Security		BearerAuth
-//	@Param			id		path		int				true	"id"
-//	@Param			Request	body		SetStatus		true	"Change Status"
-//	@Success		200		{object}	ResponseJson	"Success"
+//	@Param			id		path		int						true	"id"
+//	@Param			Request	body		h.SetStatus				true	"Change Status"
+//	@Success		200		{object}	h.SuccessResponse		"Successful"
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
+//
 //	@Router			/TaskCompleted/{id} [put]
 func ChangeStatus(c *gin.Context) {
-	var req SetStatus
+	var req h.SetStatus
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 		return
 	}
 
@@ -222,25 +242,28 @@ func ChangeStatus(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
 	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status: 400,
+
+			Message: err.Error()})
 		return
 	} else if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 		return
 	}
 
@@ -250,13 +273,15 @@ func ChangeStatus(c *gin.Context) {
 	if err != nil {
 		log.Println(err.Error(), err)
 
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status: 500,
+
+			Message: err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Task status updated successfully.",
-		"Id":      result,
+	c.JSON(http.StatusOK, h.SaveResponse{
+		Status:  http.StatusCreated,
+		Message: "Task status updated successfully.",
+		Id:      result,
 	})
 }

@@ -41,9 +41,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SaveResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -78,15 +90,27 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.SaveTask"
+                            "$ref": "#/definitions/helpers.SaveTask"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -118,9 +142,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.DeleteResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -152,9 +188,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.DeleteResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -181,9 +229,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -210,9 +270,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -235,7 +307,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.User"
+                            "$ref": "#/definitions/helpers.User"
                         }
                     }
                 ],
@@ -243,7 +315,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t\t\t//\tFailed\t\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error\"\t//\tServer-side\tfailure",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -266,9 +350,21 @@ const docTemplate = `{
                 "summary": "Logout",
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -291,7 +387,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.User"
+                            "$ref": "#/definitions/helpers.User"
                         }
                     }
                 ],
@@ -299,7 +395,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SaveResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -337,15 +445,27 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.SetStatus"
+                            "$ref": "#/definitions/helpers.SetStatus"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -380,15 +500,27 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.SaveTask"
+                            "$ref": "#/definitions/helpers.SaveTask"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "Successful",
                         "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
+                            "$ref": "#/definitions/helpers.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ErrorResponse"
                         }
                     }
                 }
@@ -396,16 +528,64 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.ResponseJson": {
+        "helpers.BadRequestResponse": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string",
-                    "example": "Success"
+                    "example": "Bad request"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
                 }
             }
         },
-        "controllers.SaveTask": {
+        "helpers.DeleteResult": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Successfully deleted"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "helpers.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Something went wrong"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 500
+                }
+            }
+        },
+        "helpers.SaveResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 200
+                }
+            }
+        },
+        "helpers.SaveTask": {
             "type": "object",
             "required": [
                 "title"
@@ -419,7 +599,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.SetStatus": {
+        "helpers.SetStatus": {
             "type": "object",
             "required": [
                 "isCompleted"
@@ -430,7 +610,20 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.User": {
+        "helpers.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "success"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "200"
+                }
+            }
+        },
+        "helpers.User": {
             "type": "object",
             "required": [
                 "password",
@@ -438,6 +631,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "helpers.UserResult": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
                     "type": "string"
                 },
                 "username": {
@@ -461,8 +665,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "Todo Web API",
-	Description:      "Todo Web API with JWT Auth",
+	Title:            "Todo.Service",
+	Description:      "Todo.Service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

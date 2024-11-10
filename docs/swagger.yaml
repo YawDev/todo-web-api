@@ -167,19 +167,6 @@ paths:
           schema:
             $ref: '#/definitions/controllers.ResponseJson'
       summary: GetUserById
-  /Home:
-    get:
-      consumes:
-      - application/json
-      description: Sign-In with user credentials, for generated access token
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/controllers.ResponseJson'
-      summary: Home
   /Login:
     post:
       consumes:

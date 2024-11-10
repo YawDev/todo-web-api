@@ -218,26 +218,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/Home": {
-            "get": {
-                "description": "Sign-In with user credentials, for generated access token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Home",
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ResponseJson"
-                        }
-                    }
-                }
-            }
-        },
         "/Login": {
             "post": {
                 "description": "Sign-In with user credentials, for generated access token",

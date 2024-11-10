@@ -240,14 +240,12 @@ func RefreshToken(c *gin.Context) {
 //	@Router			/Logout [post]
 func Logout(c *gin.Context) {
 	tokenStr := c.GetHeader("Authorization")
-	fmt.Println(tokenStr)
 	if tokenStr == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "No token provided."})
 	}
 
 	tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
 	claims, err := auth.ParseToken(tokenStr)
-	fmt.Println(tokenStr)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
 	}

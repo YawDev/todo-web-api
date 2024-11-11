@@ -2,7 +2,7 @@
 // @title						Todo.Service
 // @version					1.0
 // @description				Todo.Service
-// @host						0.0.0.0:8080
+// @host						172.25.21.251:8080
 // @BasePath					/api/v1
 // @securityDefinitions.apikey	BearerAuth
 // @in							header
@@ -13,6 +13,7 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
+	"strconv"
 	auth "todo-web-api/authentication"
 	app "todo-web-api/controllers"
 	s "todo-web-api/storage"
@@ -40,11 +41,13 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://0.0.0.0:172.25.21.251"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		AllowOrigins: []string{config.CORSConfig.AllowedOrigins[0], config.CORSConfig.AllowedOrigins[1]},
+		AllowMethods: []string{config.CORSConfig.AllowedMethods[0], config.CORSConfig.AllowedMethods[1],
+			config.CORSConfig.AllowedMethods[2],
+			config.CORSConfig.AllowedMethods[3]},
+		AllowHeaders:     []string{config.CORSConfig.AllowedHeaders[0], config.CORSConfig.AllowedHeaders[1]},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
+		AllowCredentials: config.CORSConfig.AllowCredentials,
 	}))
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
@@ -57,13 +60,14 @@ func main() {
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	go func() {
-		err := openBrowser("http://172.25.21.251:8080/swagger/index.html")
+		err := openBrowser("http://" + config.App.Host + ":8080" + config.Swagger.DocPath)
 		if err != nil {
 			log.Println(err.Error(), err)
 			panic(err)
 		}
 	}()
-	r.Run("0.0.0.0:8080")
+	appPort := strconv.Itoa(config.App.Port)
+	r.Run("0.0.0.0:" + appPort)
 }
 
 func RouteSetup(r *gin.RouterGroup) {

@@ -10,8 +10,8 @@ type Config struct {
 	App        App        `yaml:"app"`
 	Database   Database   `yaml:"database"`
 	Swagger    Swagger    `yaml:"swagger"`
-	APIConfig  APIConfig  `yaml:"apiConfig"`
-	CORSConfig CORSConfig `yaml:"corsConfig"`
+	APIConfig  APIConfig  `yaml:"api"`
+	CORSConfig CORSConfig `yaml:"cors"`
 }
 
 type App struct {

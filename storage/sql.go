@@ -3,10 +3,8 @@ package storage
 import (
 	"fmt"
 	"log"
-	"os"
 	models "todo-web-api/models"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,21 +14,15 @@ type StoreDbManager struct {
 
 var Context *gorm.DB
 
-func (Db *StoreDbManager) Connect() {
+func (Db *StoreDbManager) Connect(dbUser, dbPassword, dbHost string, dbPort int) {
 	var err error
+	User := dbUser
+	Password := dbPassword
+	Port := dbPort
+	Host := dbHost
 
-	err = godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
-
-	User := os.Getenv("DB_USER")
-	Password := os.Getenv("DB_PASSWORD")
-	Port := os.Getenv("DB_PORT")
-	Host := os.Getenv("DB_HOST")
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/Todo?charset=utf8mb4&parseTime=True&loc=Local", User, Password, Host, Port)
-	Context, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%v)/Todo?charset=utf8mb4&parseTime=True&loc=Local", User, Password, Host, Port)
+	Context, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		errMsg := "SQL Connection failed"
 		log.Println(errMsg)

@@ -1,12 +1,8 @@
 package storage
 
 import (
-	"os"
-	"strconv"
 	models "todo-web-api/models"
 	sqlite "todo-web-api/storagelite"
-
-	"github.com/joho/godotenv"
 )
 
 var UserManager IUserManager
@@ -14,18 +10,7 @@ var TaskManager ITaskManager
 var ListManager IListManager
 var StoreManager IDatabase
 
-func ConfigureDb() {
-
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
-
-	str := os.Getenv("UseSQLite")
-	useSQLite, err := strconv.ParseBool(str)
-	if err != nil {
-		panic(err)
-	}
+func ConfigureDb(useSQLite bool) {
 
 	if useSQLite {
 		Sqlite()
@@ -70,5 +55,5 @@ type IUserManager interface {
 }
 
 type IDatabase interface {
-	Connect()
+	Connect(dbUser, dbPassword, dbHost string, dbPort int)
 }

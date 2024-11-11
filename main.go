@@ -2,7 +2,7 @@
 // @title						Todo.Service
 // @version					1.0
 // @description				Todo.Service
-// @host						localhost:8080
+// @host						0.0.0.0:8080
 // @BasePath					/api/v1
 // @securityDefinitions.apikey	BearerAuth
 // @in							header
@@ -26,14 +26,21 @@ import (
 )
 
 func main() {
-	s.ConfigureDb()
+
+	config, err := loadConfig("config-local.yaml")
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+	dbConfigs := config.Database
+
+	s.ConfigureDb(dbConfigs.UseSQLite)
 	Db := s.StoreManager
-	Db.Connect()
+	Db.Connect(dbConfigs.Username, dbConfigs.Password, dbConfigs.Host, dbConfigs.Port)
 
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080"},
+		AllowOrigins:     []string{"http://0.0.0.0:172.25.21.251"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -50,13 +57,13 @@ func main() {
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	go func() {
-		err := openBrowser("http://localhost:8080/swagger/index.html")
+		err := openBrowser("http://172.25.21.251:8080/swagger/index.html")
 		if err != nil {
 			log.Println(err.Error(), err)
 			panic(err)
 		}
 	}()
-	r.Run(":8080")
+	r.Run("0.0.0.0:8080")
 }
 
 func RouteSetup(r *gin.RouterGroup) {
@@ -83,7 +90,7 @@ func openBrowser(url string) error {
 	case "windows":
 		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
 	default:
-		err = exec.Command("xdg-open", url).Start()
+		err = exec.Command("wsl.exe", "cmd.exe", "/C", "start", url).Start()
 	}
 	return err
 }

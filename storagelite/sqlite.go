@@ -13,7 +13,7 @@ type StoreManagerLite struct {
 
 var Context *gorm.DB
 
-func (Db *StoreManagerLite) Connect() {
+func (Db *StoreManagerLite) Connect(dbUser, dbPassword, dbHost string, dbPort int) {
 	var err error
 	Context, err = gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
 	if err != nil {

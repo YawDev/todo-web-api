@@ -1,7 +1,7 @@
 app:
   name: "Todo Service"
   environment: "development"
-  port: 8080
+  port: 3000
   host: "0.0.0.0"
 
 database:
@@ -12,6 +12,7 @@ database:
   password: "your-password"
   name: "your-database-name"
   ssl_mode: "disable"
+  useSQLite: "false"
 
 swagger:
   enabled: true
@@ -19,7 +20,7 @@ swagger:
   doc_path: "/swagger/index.html"
 
 api:
-  base_url: "http://localhost:8080/api/v1"
+  base_url: "http://localhost:3000/api/v1"
   timeout: 30
 
 cors:

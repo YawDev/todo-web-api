@@ -6,6 +6,4 @@ coverage.xml
 __debug_bin167954544
 .DS_Store
 config-local.yaml
-docs/docs.go
-docs/swagger.json
-docs/swagger.yaml
+

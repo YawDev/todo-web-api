@@ -27,8 +27,8 @@ import (
 //	@Produce		json
 //	@Param			Request	body		h.User					true	"Login Request"
 //	@Success		200		{object}	h.SuccessResponse		"Successful"
-//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"			//	Failed		due	to	bad	request	(e.g., validation error)
-//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"	//	Server-side	failure
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"
+//	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Login [post]
 func Login(c *gin.Context) {
 
@@ -258,7 +258,7 @@ func RefreshToken(c *gin.Context) {
 //	@Produce		json
 //	@Security		BearerAuth
 //	@Success		200	{object}	h.SuccessResponse		"Successful"
-//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Logout [post]
 func Logout(c *gin.Context) {

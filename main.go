@@ -2,7 +2,6 @@
 // @title						Todo.Service
 // @version					1.0
 // @description				Todo.Service
-// @host						172.25.21.251:8080
 // @BasePath					/api/v1
 // @securityDefinitions.apikey	BearerAuth
 // @in							header
@@ -13,7 +12,6 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
-	"strconv"
 	auth "todo-web-api/authentication"
 	app "todo-web-api/controllers"
 	s "todo-web-api/storage"
@@ -50,6 +48,7 @@ func main() {
 		AllowCredentials: config.CORSConfig.AllowCredentials,
 	}))
 
+	docs.SwaggerInfo.Host = config.App.Host + ":" + config.App.Port
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	v1 := r.Group("/api/v1")
 	{
@@ -66,8 +65,7 @@ func main() {
 			panic(err)
 		}
 	}()
-	appPort := strconv.Itoa(config.App.Port)
-	r.Run("0.0.0.0:" + appPort)
+	r.Run("0.0.0.0:" + config.App.Port)
 }
 
 func RouteSetup(r *gin.RouterGroup) {

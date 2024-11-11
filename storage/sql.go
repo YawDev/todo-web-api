@@ -14,7 +14,7 @@ type StoreDbManager struct {
 
 var Context *gorm.DB
 
-func (Db *StoreDbManager) Connect(dbUser, dbPassword, dbHost string, dbPort int) {
+func (Db *StoreDbManager) Connect(dbUser, dbPassword, dbHost string, dbPort string) {
 	var err error
 	User := dbUser
 	Password := dbPassword

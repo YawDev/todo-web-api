@@ -17,14 +17,14 @@ type Config struct {
 type App struct {
 	Name        string `yaml:"name"`
 	Environment string `yaml:"environment"`
-	Port        int    `yaml:"port"`
+	Port        string `yaml:"port"`
 	Host        string `yaml:"host"`
 }
 
 type Database struct {
 	Driver    string `yaml:"driver"`
 	Host      string `yaml:"host"`
-	Port      int    `yaml:"port"`
+	Port      string `yaml:"port"`
 	Username  string `yaml:"username"`
 	Password  string `yaml:"password"`
 	Name      string `yaml:"name"`

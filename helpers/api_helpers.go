@@ -8,8 +8,8 @@ type User struct {
 }
 
 type SuccessResponse struct {
-	Status  string `json:"status" example:"200"`
-	Message string `json:"message" example:"success"`
+	Status  int    `json:"status" example:"200"`
+	Message string `json:"message" example:"Success"`
 }
 
 type ErrorResponse struct {
@@ -24,14 +24,14 @@ type BadRequestResponse struct {
 
 type SaveResponse struct {
 	Status  int    `json:"status" example:"200"`
-	Message string `json:"message" example:"Successfully created`
-	Id      int    `json:"id" example:"1`
+	Message string `json:"message" example:"Successfully saved"`
+	Id      int    `json:"id" example:"1"`
 }
 
 type DeleteResult struct {
 	Status  int    `json:"status" example:"200"`
 	Message string `json:"message" example:"Successfully deleted"`
-	Success bool   `json:"success" example:"true`
+	Success bool   `json:"success" example:"true"`
 }
 
 type UserResult struct {

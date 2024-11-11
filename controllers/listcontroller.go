@@ -25,7 +25,7 @@ import (
 //	@Security		BearerAuth
 //	@Param			id	path		int						true	"id"
 //	@Success		200	{object}	h.SaveResponse			"Successful"
-//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/CreateList/{id} [post]
 func CreateListForUser(c *gin.Context) {
@@ -136,7 +136,7 @@ func DeleteList(c *gin.Context) {
 //
 //	@Success		200		{object}	h.SuccessResponse		"Successful"
 //
-//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/GetList/{userid} [get]
 func GetListByUserId(c *gin.Context) {

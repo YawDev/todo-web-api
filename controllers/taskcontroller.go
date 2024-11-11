@@ -24,7 +24,7 @@ import (
 //	@Security		BearerAuth
 //	@Param			listid	path		int						true	"List ID"
 //	@Param			Request	body		h.SaveTask				true	"Add Task"
-//	@Success		200		{object}	h.SuccessResponse		"Successful"
+//	@Success		200		{object}	h.SaveResponse		"Successful"
 //	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/CreateTask/{listid} [post]
@@ -88,7 +88,7 @@ func AddTaskToList(c *gin.Context) {
 //	@Produce		json
 //	@Param			id	path		int						true	"id"
 //	@Success		200	{object}	h.DeleteResult			"Successful"
-//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		400	{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Security		BearerAuth
 //	@Router			/DeleteTask/{id} [delete]
@@ -140,7 +140,7 @@ func DeleteTask(c *gin.Context) {
 //	@Param			id		path		int						true	"id"
 //	@Param			Request	body		h.SaveTask				true	"Update Task"
 //	@Success		200		{object}	h.SuccessResponse		"Successful"
-//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/UpdateTask/{id} [put]
 func UpdateTask(c *gin.Context) {
@@ -219,8 +219,8 @@ func UpdateTask(c *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			id		path		int						true	"id"
 //	@Param			Request	body		h.SetStatus				true	"Change Status"
-//	@Success		200		{object}	h.SuccessResponse		"Successful"
-//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
+//	@Success		200		{object}	h.SaveResponse		"Successful"
+//	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //
 //	@Router			/TaskCompleted/{id} [put]

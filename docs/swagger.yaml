@@ -1,0 +1,427 @@
+basePath: /api/v1
+definitions:
+  helpers.BadRequestResponse:
+    properties:
+      message:
+        example: Bad request
+        type: string
+      status:
+        example: 400
+        type: integer
+    type: object
+  helpers.DeleteResult:
+    properties:
+      message:
+        example: Successfully deleted
+        type: string
+      status:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+  helpers.ErrorResponse:
+    properties:
+      message:
+        example: Something went wrong
+        type: string
+      status:
+        example: 500
+        type: integer
+    type: object
+  helpers.SaveResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      message:
+        example: Successfully saved
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  helpers.SaveTask:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  helpers.SetStatus:
+    properties:
+      isCompleted:
+        type: boolean
+    required:
+    - isCompleted
+    type: object
+  helpers.SuccessResponse:
+    properties:
+      message:
+        example: Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  helpers.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  helpers.UserResult:
+    properties:
+      createdAt:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Todo.Service
+  title: Todo.Service
+  version: "1.0"
+paths:
+  /CreateList/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create List
+  /CreateTask/{listid}:
+    post:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: List ID
+        in: path
+        name: listid
+        required: true
+        type: integer
+      - description: Add Task
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/helpers.SaveTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SaveResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Task
+  /DeleteList/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.DeleteResult'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete List
+  /DeleteTask/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.DeleteResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete Task
+  /GetList/{userid}:
+    get:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: User ID
+        in: path
+        name: userid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      summary: Get List
+  /GetUser/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetch User Account
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: "Bad Request\"\t//\tFailed\tdue\tto\tbad\trequest\t(e.g., validation
+            error)"
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      summary: GetUserById
+  /Login:
+    post:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: Login Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/helpers.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      summary: Login
+  /Logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout User Account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout
+  /Register:
+    post:
+      consumes:
+      - application/json
+      description: Create User Account
+      parameters:
+      - description: Login Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/helpers.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helpers.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      summary: Register
+  /TaskCompleted/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Change Status
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/helpers.SetStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SaveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Change Status Task
+  /UpdateTask/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Sign-In with user credentials, for generated access token
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Task
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/helpers.SaveTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/helpers.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update Task
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

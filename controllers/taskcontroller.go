@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,6 +10,7 @@ import (
 	s "todo-web-api/storage"
 
 	gin "github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // Create Task endpoint for Todo
@@ -30,10 +30,12 @@ import (
 //	@Router			/CreateTask/{listid} [post]
 func AddTaskToList(c *gin.Context) {
 	var req h.SaveTask
+	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
 
@@ -44,7 +46,9 @@ func AddTaskToList(c *gin.Context) {
 	idParam := c.Param("listid")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -54,14 +58,18 @@ func AddTaskToList(c *gin.Context) {
 
 	result, err := s.ListManager.GetList(id)
 	if err != nil && err.Error() == "list record not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
 
 			Message: err.Error()})
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -94,10 +102,13 @@ func AddTaskToList(c *gin.Context) {
 //	@Router			/DeleteTask/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	idParam := c.Param("id")
+	ctx := c.Request.Context()
+
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
 
@@ -106,15 +117,18 @@ func DeleteTask(c *gin.Context) {
 
 	result, err := s.TaskManager.DeleteTask(id)
 	if err != nil && err.Error() == "task record not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
 
 			Message: err.Error()})
 	} else if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
 
@@ -145,9 +159,12 @@ func DeleteTask(c *gin.Context) {
 //	@Router			/UpdateTask/{id} [put]
 func UpdateTask(c *gin.Context) {
 	var req h.SaveTask
+	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
@@ -159,7 +176,9 @@ func UpdateTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
@@ -168,7 +187,9 @@ func UpdateTask(c *gin.Context) {
 
 	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
@@ -176,7 +197,9 @@ func UpdateTask(c *gin.Context) {
 			Message: err.Error()})
 		return
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -193,7 +216,9 @@ func UpdateTask(c *gin.Context) {
 
 	result, err := s.TaskManager.UpdateTask(task)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -226,9 +251,12 @@ func UpdateTask(c *gin.Context) {
 //	@Router			/TaskCompleted/{id} [put]
 func ChangeStatus(c *gin.Context) {
 	var req h.SetStatus
+	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
@@ -240,7 +268,9 @@ func ChangeStatus(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -250,7 +280,9 @@ func ChangeStatus(c *gin.Context) {
 
 	task, err := s.TaskManager.GetTask(id)
 	if err != nil && err.Error() == "task record not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
@@ -258,7 +290,9 @@ func ChangeStatus(c *gin.Context) {
 			Message: err.Error()})
 		return
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -271,7 +305,9 @@ func ChangeStatus(c *gin.Context) {
 
 	result, err := s.TaskManager.UpdateTask(task)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,

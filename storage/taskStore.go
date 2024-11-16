@@ -2,9 +2,9 @@ package storage
 
 import (
 	"errors"
-	"log"
 	models "todo-web-api/models"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -22,18 +22,24 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("task record not found")
-		log.Println(err.Error(), err)
+		log.WithFields(logrus.Fields{
+			"error": err.Error(),
+		}).Error(result.Error)
 		return false, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong")
-		log.Println(err.Error(), err)
+		err := errors.New("something went wrong while fetching task")
+		log.WithFields(logrus.Fields{
+			"error": err.Error(),
+		}).Error(result.Error)
 		return false, err
 	}
 
 	result = Context.Delete(&task)
 	if result.Error != nil {
-		err := errors.New("something went wrong")
-		log.Println(err.Error(), err)
+		err := errors.New("something went wrong while deleting task")
+		log.WithFields(logrus.Fields{
+			"error": err.Error(),
+		}).Error(result.Error)
 		return false, err
 	}
 	return true, nil
@@ -44,11 +50,15 @@ func (T *TaskStore) GetTask(id int) (*models.Task, error) {
 	result := Context.First(&task, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("task record not found")
-		log.Println(err.Error(), result.Error)
+		log.WithFields(logrus.Fields{
+			"error": err.Error(),
+		}).Error(result.Error)
 		return nil, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong")
-		log.Println(err.Error(), result.Error)
+		err := errors.New("something went wrong while fetching task")
+		log.WithFields(logrus.Fields{
+			"error": err.Error(),
+		}).Error(result.Error)
 		return nil, err
 	}
 	return &task, nil

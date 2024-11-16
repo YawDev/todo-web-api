@@ -131,7 +131,7 @@ func Test_Find_Existing_Account_Not_Found(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 
-	assert.EqualError(t, errors.New("user not found"), err.Error())
+	assert.EqualError(t, errors.New("existing account not found"), err.Error())
 }
 
 func Test_Find_Existing_Account(t *testing.T) {

@@ -2,20 +2,23 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	http "net/http"
 	"strconv"
 	"strings"
 	"time"
 	auth "todo-web-api/authentication"
 	h "todo-web-api/helpers"
+	"todo-web-api/loggerutils"
 	models "todo-web-api/models"
 
 	s "todo-web-api/storage"
 
 	gin "github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	bcr "golang.org/x/crypto/bcrypt"
 )
+
+var log = loggerutils.GetLogger()
 
 // Login endpoint for Todo godoc
 //
@@ -31,11 +34,11 @@ import (
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Login [post]
 func Login(c *gin.Context) {
-
+	ctx := c.Request.Context()
 	var req h.User
 	var errMessage = ""
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println(err.Error())
+		loggerutils.ErrorLog(c, http.StatusBadRequest, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -43,7 +46,8 @@ func Login(c *gin.Context) {
 	var isLoggedIn = auth.IsTokenActive(req.Username)
 	if isLoggedIn {
 		errMessage = "User is already logged in"
-		log.Println(errMessage, errors.New(errMessage))
+		loggerutils.ErrorLog(c, http.StatusBadRequest, errors.New(errMessage))
+
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: errMessage})
@@ -51,9 +55,10 @@ func Login(c *gin.Context) {
 	}
 
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
-	if err != nil && err.Error() == "user not found" {
+	if err != nil && err.Error() == "existing account not found" {
 
-		log.Println(err.Error(), err)
+		loggerutils.ErrorLog(c.Request.Context(), http.StatusBadRequest, err)
+
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: err.Error()})
@@ -64,7 +69,9 @@ func Login(c *gin.Context) {
 	matchingPassword := err == nil
 
 	if !matchingPassword {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error())
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
@@ -74,7 +81,9 @@ func Login(c *gin.Context) {
 
 	token, err := auth.GenerateAccessToken(existingAccount.Username, existingAccount.Id)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error())
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
@@ -84,8 +93,9 @@ func Login(c *gin.Context) {
 
 	refreshToken, err := auth.GenerateRefreshToken(existingAccount.Id, existingAccount.Username)
 	if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating refresh token."})
 		return
 	}
@@ -135,12 +145,14 @@ func Login(c *gin.Context) {
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Register [post]
 func Register(c *gin.Context) {
+	ctx := c.Request.Context()
 
 	var req h.User
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -148,8 +160,9 @@ func Register(c *gin.Context) {
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
 	id, err := s.UserManager.CreateUser(user)
 	if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error())
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
 
@@ -181,31 +194,40 @@ func Register(c *gin.Context) {
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/GetUser/{id} [get]
 func GetUserById(c *gin.Context) {
+	ctx := c.Request.Context()
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
+		return
 	}
 
 	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error())
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: err.Error(),
 		})
+		return
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error())
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
 			Message: err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, h.UserResult{
@@ -215,6 +237,8 @@ func GetUserById(c *gin.Context) {
 }
 
 func RefreshToken(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	tokenStr, err := c.Cookie("refresh_token")
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not fetch refresh from cookie"})
@@ -234,8 +258,9 @@ func RefreshToken(c *gin.Context) {
 
 	newAccessToken, err := auth.GenerateAccessToken(claims.Username, claims.UserID)
 	if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusInternalServerError,
+		}).Error(err.Error())
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
 
@@ -285,9 +310,7 @@ func Logout(c *gin.Context) {
 func Hash(password string) []byte {
 	hash, err := bcr.GenerateFromPassword([]byte(password), bcr.DefaultCost)
 	if err != nil {
-		log.Println(err.Error(), err)
-
-		panic(err)
+		log.Error(err.Error())
 	}
 	return hash
 }

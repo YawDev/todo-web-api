@@ -55,5 +55,5 @@ type IUserManager interface {
 }
 
 type IDatabase interface {
-	Connect(dbUser, dbPassword, dbHost, dbPort string)
+	Connect(dbUser, dbPassword, dbHost, dbPort, dbName string)
 }

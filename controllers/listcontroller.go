@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	s "todo-web-api/storage"
 
 	gin "github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // Create List endpoint for Todo
@@ -29,45 +29,60 @@ import (
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/CreateList/{id} [post]
 func CreateListForUser(c *gin.Context) {
+	ctx := c.Request.Context()
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		log.Println(err.Error(), err)
+	requestID, ok := ctx.Value("requestID").(string)
+	if !ok {
+		requestID = "unknown" // Handle missing request ID
+	}
 
+	if err != nil {
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"request-ID": requestID,
+			"status":     http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
+		return
 	}
 
 	result, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"request-ID": requestID,
+			"status":     http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: err.Error()})
+		return
 
 	} else if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  500,
 			Message: err.Error()})
-
+		return
 	}
 
 	existingList, err := s.ListManager.GetListForUser(id)
 	if existingList != nil {
 		errMsg := "there can be only 1 list per user"
-		log.Println(errMsg, errors.New(errMsg))
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(errors.New(errMsg), err)
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: errMsg})
 		return
 	} else if err != nil && !strings.Contains(err.Error(), "not found") {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: err.Error()})
@@ -97,24 +112,32 @@ func CreateListForUser(c *gin.Context) {
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/DeleteList/{id} [delete]
 func DeleteList(c *gin.Context) {
+	ctx := c.Request.Context()
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
 			Message: err.Error()})
+		return
 	}
 
 	result, err := s.ListManager.DeleteList(id)
 	if err != nil && err.Error() == "list record not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusBadRequest, h.ErrorResponse{
 			Status:  400,
 			Message: err.Error()})
 		return
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
 			Message: err.Error()})
@@ -140,10 +163,13 @@ func DeleteList(c *gin.Context) {
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/GetList/{userid} [get]
 func GetListByUserId(c *gin.Context) {
+	ctx := c.Request.Context()
 	idParam := c.Param("userid")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
@@ -154,7 +180,9 @@ func GetListByUserId(c *gin.Context) {
 	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
 
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
@@ -162,8 +190,9 @@ func GetListByUserId(c *gin.Context) {
 			Message: err.Error()})
 		return
 	} else if err != nil {
-		log.Println(err.Error(), err)
-
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
 
@@ -173,7 +202,9 @@ func GetListByUserId(c *gin.Context) {
 
 	list, err := s.ListManager.GetListForUser(user.Id)
 	if err != nil && err.Error() == "list record not found" {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status: 400,
@@ -181,7 +212,9 @@ func GetListByUserId(c *gin.Context) {
 			Message: err.Error()})
 		return
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.FromContext(ctx).WithFields(logrus.Fields{
+			"status": http.StatusBadRequest,
+		}).Error(err.Error(), err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,

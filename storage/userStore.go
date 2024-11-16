@@ -21,7 +21,7 @@ func (U *UserStore) CreateUser(user *models.User) (ID int, err error) {
 	userQuery := Context.Where("Username = ?", user.Username).First(&existingUser)
 	if userQuery.Error == nil {
 		err := errors.New("user exists already")
-		log.WithFields(logrus.Fields{}).Error(err)
+		log.WithFields(logrus.Fields{"LoggerName": "UserStore"}).Error(err)
 		return 0, err
 	} else if userQuery.Error != nil && !errors.Is(userQuery.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("something went wrong creating new user")
@@ -41,13 +41,14 @@ func (U *UserStore) DeleteUser(id int) (success bool, err error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("user not found")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
+			"LoggerName": "UserStore",
 		}).Error(result.Error)
 		return false, err
 	} else if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("something went wrong while fetching user")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
+			"LoggerName": "UserStore",
+			"error":      err.Error(),
 		}).Error(result.Error)
 	}
 
@@ -68,13 +69,15 @@ func (U *UserStore) GetUser(id int) (*models.User, error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("user not found")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
+			"LoggerName": "UserStore",
+			"error":      err.Error(),
 		}).Error(result.Error)
 		return nil, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong fetching User")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
+			"LoggerName": "UserStore",
+			"error":      err.Error(),
 		}).Error(result.Error)
 		return nil, result.Error
 	}

@@ -19,9 +19,7 @@ func RequestIDMiddleware() gin.HandlerFunc {
 		logger := log.Logger.WithFields(logrus.Fields{
 			"RequestID": requestID,
 		})
-		logger.Info("Logger set in context with RequestID")
 
-		log.Info(string(contextkeys.ContextLoggerKey) + " --middleware")
 		ctx := context.WithValue(c.Request.Context(), contextkeys.ContextLoggerKey, logger)
 		ctx = context.WithValue(ctx, contextkeys.ContextKeyRequestID, requestID)
 

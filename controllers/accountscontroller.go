@@ -13,6 +13,8 @@ import (
 
 	s "todo-web-api/storage"
 
+	msg "todo-web-api/messages"
+
 	gin "github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	bcr "golang.org/x/crypto/bcrypt"
@@ -38,14 +40,14 @@ func Login(c *gin.Context) {
 	var req h.User
 	var errMessage = ""
 	if err := c.ShouldBindJSON(&req); err != nil {
-		loggerutils.ErrorLog(c, http.StatusBadRequest, err)
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var isLoggedIn = auth.IsTokenActive(req.Username)
 	if isLoggedIn {
-		errMessage = "User is already logged in"
+		errMessage = msg.AlreadyLoggedIn
 		loggerutils.ErrorLog(c, http.StatusBadRequest, errors.New(errMessage))
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
@@ -55,9 +57,9 @@ func Login(c *gin.Context) {
 	}
 
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
-	if err != nil && err.Error() == "existing account not found" {
+	if err != nil && err.Error() == msg.AccountNotFound {
 
-		loggerutils.ErrorLog(c.Request.Context(), http.StatusBadRequest, err)
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
@@ -69,25 +71,21 @@ func Login(c *gin.Context) {
 	matchingPassword := err == nil
 
 	if !matchingPassword {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusBadRequest,
-		}).Error(err.Error())
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
-			Message: "Invalid Password Credentials"})
+			Message: msg.InvalidPassword})
 		return
 	}
 
 	token, err := auth.GenerateAccessToken(existingAccount.Username, existingAccount.Id)
 	if err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusInternalServerError,
-		}).Error(err.Error())
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
-			Message: "Error while generating access token."})
+			Message: msg.AccessTokenError})
 		return
 	}
 
@@ -150,9 +148,8 @@ func Register(c *gin.Context) {
 	var req h.User
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusBadRequest,
-		}).Error(err.Error())
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -160,21 +157,20 @@ func Register(c *gin.Context) {
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
 	id, err := s.UserManager.CreateUser(user)
 	if err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusBadRequest,
-		}).Error(err.Error())
-		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
-			Message: "something went wrong",
+		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
+			Status:  500,
+			Message: msg.SomethingWentWrong,
 		})
 		return
 	}
 
+	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessUserCreate)
 	c.JSON(http.StatusOK, h.SaveResponse{
 		Status: 200,
 
-		Message: "User created successfully.",
+		Message: msg.SuccessUserCreate,
 		Id:      id,
 	})
 }
@@ -198,9 +194,7 @@ func GetUserById(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusBadRequest,
-		}).Error(err.Error())
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
@@ -208,21 +202,15 @@ func GetUserById(c *gin.Context) {
 	}
 
 	user, err := s.UserManager.GetUser(id)
-	if err != nil && err.Error() == "user not found" {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusBadRequest,
-		}).Error(err.Error())
-
+	if err != nil && err.Error() == msg.UserNotFound {
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
 			Message: err.Error(),
 		})
 		return
 	} else if err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusInternalServerError,
-		}).Error(err.Error())
-
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
 			Message: err.Error(),
@@ -247,20 +235,20 @@ func RefreshToken(c *gin.Context) {
 
 	claims, err := auth.ParseRefreshToken(tokenStr)
 	if err != nil {
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 		return
 	}
 
 	if !auth.IsRefreshTokenActive(claims.Username) {
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "refresh token unauthorized"})
 		return
 	}
 
 	newAccessToken, err := auth.GenerateAccessToken(claims.Username, claims.UserID)
 	if err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusInternalServerError,
-		}).Error(err.Error())
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status: 500,
 
@@ -287,23 +275,28 @@ func RefreshToken(c *gin.Context) {
 //	@Failure		500	{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/Logout [post]
 func Logout(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	tokenStr := c.GetHeader("Authorization")
 	if tokenStr == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "No token provided."})
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, errors.New(msg.NoTokenProvided))
+		c.JSON(http.StatusUnauthorized, gin.H{"message": msg.NoTokenProvided})
 	}
 
 	tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
 	claims, err := auth.ParseToken(tokenStr)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, errors.New(msg.InvalidToken))
+		c.JSON(http.StatusUnauthorized, gin.H{"message": msg.InvalidToken})
 	}
 
 	auth.RemoveToken(claims.Username)
 	auth.RemoveRefreshToken(claims.Username)
 
+	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessLogout)
 	c.JSON(http.StatusOK, h.ErrorResponse{
 		Status:  200,
-		Message: "User logout successfully.",
+		Message: msg.SuccessLogout,
 	})
 }
 

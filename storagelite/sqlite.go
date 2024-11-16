@@ -1,9 +1,10 @@
 package storagelite
 
 import (
-	"log"
+	l "todo-web-api/loggerutils"
 	models "todo-web-api/models"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -18,10 +19,9 @@ func (Db *StoreManagerLite) Connect(dbUser, dbPassword, dbHost, dbPort, dbName s
 	Context, err = gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
 	if err != nil {
 		errMsg := "SQLite connection failed."
-		log.Println(errMsg)
-		panic(errMsg)
+		l.Log.WithFields(logrus.Fields{"LoggerName": "StoreManagerLite"}).Fatal(errMsg)
 	}
-	log.Println("SQLite Connection Successful")
+	l.Log.WithFields(logrus.Fields{"LoggerName": "StoreManagerLite"}).Info("SQLite Connection Successful")
 	Db.MigrateModels(Context)
 }
 

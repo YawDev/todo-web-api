@@ -80,12 +80,11 @@ func (l *LogUtil) Fatalf(format string, args ...interface{}) {
 }
 
 func (l *LogUtil) FromContext(ctx context.Context) *logrus.Entry {
-	Log.Info(string(contextkeys.ContextLoggerKey) + " ---fromCtx")
 	logger, ok := ctx.Value(contextkeys.ContextLoggerKey).(*logrus.Entry)
 	if !ok {
-		logrus.Warn("Logger not found in context")
+		l.Logger.Warn("Logger not found in context")
 		return logrus.NewEntry(logrus.StandardLogger())
 	}
-	logrus.Warn("Logger found in context")
+	l.Logger.Info("Logger found in context")
 	return logger
 }

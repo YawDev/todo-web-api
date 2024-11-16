@@ -29,7 +29,7 @@ type Database struct {
 	Password  string `yaml:"password"`
 	Name      string `yaml:"name"`
 	SSLMode   string `yaml:"ssl_mode"`
-	UseSQLite bool   `yaml:"use_sqlite"`
+	UseSQLite bool   `yaml:"useSQLite"`
 }
 
 type Swagger struct {

@@ -23,14 +23,16 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("task record not found")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Error(result.Error)
+			"LoggerName": "TaskStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return false, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong while fetching task")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Error(result.Error)
+			"LoggerName": "TaskStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return false, err
 	}
 
@@ -38,8 +40,9 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 	if result.Error != nil {
 		err := errors.New("something went wrong while deleting task")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Error(result.Error)
+			"LoggerName": "TaskStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return false, err
 	}
 	return true, nil
@@ -51,14 +54,16 @@ func (T *TaskStore) GetTask(id int) (*models.Task, error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("task record not found")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Error(result.Error)
+			"LoggerName": "TaskStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong while fetching task")
 		log.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Error(result.Error)
+			"LoggerName": "TaskStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return nil, err
 	}
 	return &task, nil

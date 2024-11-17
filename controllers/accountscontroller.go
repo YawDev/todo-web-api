@@ -16,7 +16,6 @@ import (
 	msg "todo-web-api/messages"
 
 	gin "github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	bcr "golang.org/x/crypto/bcrypt"
 )
 
@@ -91,9 +90,7 @@ func Login(c *gin.Context) {
 
 	refreshToken, err := auth.GenerateRefreshToken(existingAccount.Id, existingAccount.Username)
 	if err != nil {
-		log.FromContext(ctx).WithFields(logrus.Fields{
-			"status": http.StatusInternalServerError,
-		}).Error(err.Error())
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating refresh token."})
 		return
 	}
@@ -121,6 +118,7 @@ func Login(c *gin.Context) {
 
 	auth.SaveToken(existingAccount.Username, token)
 	auth.SaveRefreshToken(existingAccount.Username, refreshToken)
+	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessLogin)
 	resp := h.SaveResponse{Status: 200,
 		Message: "Successful Login"}
 	c.Header("Content-Type", "application/json")
@@ -157,7 +155,7 @@ func Register(c *gin.Context) {
 	user := &models.User{Username: req.Username, Password: string(Hash(req.Password)), CreatedAt: time.Now()}
 	id, err := s.UserManager.CreateUser(user)
 	if err != nil {
-		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
@@ -194,7 +192,7 @@ func GetUserById(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})

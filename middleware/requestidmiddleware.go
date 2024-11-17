@@ -33,8 +33,6 @@ func RequestIDMiddleware() gin.HandlerFunc {
 		}).Info("Incoming Request")
 
 		c.Next()
-
-		log.Infof("ID: %v. Request completed.", requestID)
 	}
 
 }

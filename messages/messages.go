@@ -10,4 +10,5 @@ var InvalidPassword string = "Invalid Password Credentials"
 var AccessTokenError string = "Error while generating access token."
 
 var SuccessLogout = "User logged out successfully"
+var SuccessLogin = "User logged in successfully"
 var SuccessUserCreate = "User created successfully"

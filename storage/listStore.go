@@ -15,7 +15,8 @@ func (L *ListStore) CreateList(list *models.List) (ID int, err error) {
 	result := Context.Create(&list)
 	if result.Error != nil {
 		log.WithFields(logrus.Fields{
-			"error": "unable to create list for user",
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
 		}).Error(result.Error.Error())
 	}
 	return list.Id, result.Error
@@ -27,14 +28,16 @@ func (L *ListStore) DeleteList(id int) (success bool, err error) {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
-			"error": errMsg,
-		}).Error(result.Error)
-		return false, errors.New(result.Error.Error())
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
+		return false, errors.New(errMsg)
 	} else if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		errMsg := "something went wrong while fetching list"
 		log.WithFields(logrus.Fields{
-			"error": errMsg,
-		}).Error(result.Error)
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return false, errors.New(errMsg)
 	}
 
@@ -42,9 +45,10 @@ func (L *ListStore) DeleteList(id int) (success bool, err error) {
 	if result.Error != nil {
 		errMsg := "something went wrong while deleting list"
 		log.WithFields(logrus.Fields{
-			"error": errMsg,
-		}).Error(result.Error)
-		return false, errors.New("something went wrong")
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
+		return false, errors.New(errMsg)
 	}
 	return true, nil
 }
@@ -56,15 +60,17 @@ func (L *ListStore) GetListForUser(id int) (*models.List, error) {
 
 		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
-			"error": errMsg,
-		}).Error(result.Error)
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
 		return nil, errors.New(errMsg)
 	} else if result.Error != nil {
-		errMsg := "something went wrong while fetching list for user"
+		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
-			"error": errMsg,
-		}).Error(result.Error)
-		return nil, result.Error
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
+		return nil, errors.New(errMsg)
 	}
 	Context.Preload("Tasks").First(&list, id)
 	return &list, nil
@@ -81,11 +87,13 @@ func (L *ListStore) GetList(id int) (*models.List, error) {
 		}).Error(result.Error)
 		return nil, result.Error
 	} else if result.Error != nil {
-		errMsg := "something went wrong while fetching list by ID "
+
+		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
-			"error": errMsg,
-		}).Error(result.Error)
-		return nil, result.Error
+			"LoggerName": "ListStore",
+			"DbContext":  Context.Name(),
+		}).Error(result.Error.Error())
+		return nil, errors.New(errMsg)
 	}
 	return &list, nil
 }

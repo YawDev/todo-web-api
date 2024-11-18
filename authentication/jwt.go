@@ -2,7 +2,7 @@ package authentication
 
 import (
 	"errors"
-	"log"
+	//"log"
 	"sync"
 	"time"
 
@@ -49,8 +49,7 @@ func GenerateAccessToken(username string, userId int) (string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := accessToken.SignedString(jwtKey)
 	if err != nil {
-		log.Println(err.Error(), err)
-
+		log.Error(err.Error())
 		return "", errors.New("error while creating access token")
 	}
 	return tokenString, nil
@@ -70,7 +69,7 @@ func GenerateRefreshToken(userID int, userName string) (string, error) {
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := refreshToken.SignedString(jwtKey)
 	if err != nil {
-		log.Println(err.Error(), err)
+		log.Error(err.Error())
 
 		return "", errors.New("error while creating refresh token")
 	}
@@ -84,11 +83,11 @@ func ParseToken(tokenStr string) (*Claims, error) {
 	})
 
 	if err != nil && errors.Is(err, jwt.ErrSignatureInvalid) {
-		log.Println(err.Error(), err)
+		log.Error(err.Error())
 
 		return nil, errors.New("access token signature invalid")
 	} else if err != nil {
-		log.Println(err.Error(), err)
+		log.Error(err.Error())
 
 		return nil, err
 	}
@@ -96,7 +95,7 @@ func ParseToken(tokenStr string) (*Claims, error) {
 	if !token.Valid {
 
 		err := errors.New("invalid access token")
-		log.Println(err.Error(), err)
+		log.Error(err.Error())
 
 		return nil, err
 	}
@@ -113,7 +112,7 @@ func ParseRefreshToken(tokenStr string) (*Claims, error) {
 	if err != nil && errors.Is(err, jwt.ErrSignatureInvalid) {
 
 		err := errors.New("refresh token signature invalid")
-		log.Println(err.Error(), err)
+		log.Error(err.Error())
 
 		return nil, err
 	} else if err != nil {
@@ -122,7 +121,7 @@ func ParseRefreshToken(tokenStr string) (*Claims, error) {
 
 	if !token.Valid {
 		err := errors.New("invalid refresh token")
-		log.Println(err.Error(), err)
+		log.Error(err.Error())
 
 		return nil, err
 	}

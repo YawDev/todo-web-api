@@ -2,12 +2,14 @@ package authentication
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strings"
+	"todo-web-api/loggerutils"
 
 	"github.com/gin-gonic/gin"
 )
+
+var log = loggerutils.GetLogger()
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -16,9 +18,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if tokenStr == "" {
 			errMessage = "access token required"
-
-			log.Println(errMessage, errors.New(errMessage))
-
+			loggerutils.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New(errMessage))
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": errMessage,
 			})
@@ -28,8 +28,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if !strings.HasPrefix(tokenStr, "Bearer") {
 			errMessage = "access token Bearer required"
-			log.Println(errMessage, errors.New(errMessage))
-
+			loggerutils.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New(errMessage))
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": errMessage,
 			})
@@ -42,12 +41,13 @@ func AuthMiddleware() gin.HandlerFunc {
 		claims, err := ParseToken(tokenStr)
 
 		if err != nil {
-			log.Println(err.Error(), err)
+			loggerutils.ErrorLog(c.Request.Context(), http.StatusUnauthorized, err)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
 		}
 
 		if _, ok := activeTokens[claims.Username]; !ok {
+			loggerutils.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New("token unauthorized"))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "token unauthorized"})
 			c.Abort()
 		}

@@ -44,7 +44,7 @@ func CreateListForUser(c *gin.Context) {
 	}
 
 	result, err := s.UserManager.GetUser(id)
-	if err != nil && err.Error() == "user not found" {
+	if err != nil && err.Error() == "user not found, list cannot be created" {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
@@ -81,8 +81,24 @@ func CreateListForUser(c *gin.Context) {
 	}
 
 	list := &models.List{UserId: result.Id, CreatedAt: time.Now()}
+	_, err = s.ListManager.CreateList(list)
+	if err != nil && err.Error() == "user not found, list cannot created" {
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
-	s.ListManager.CreateList(list)
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status:  400,
+			Message: err.Error()})
+		return
+
+	} else if err != nil {
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
+
+		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
+			Status:  500,
+			Message: err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, h.SaveResponse{
 		Status:  200,
 		Message: "List created successfully.",
@@ -107,11 +123,12 @@ func DeleteList(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
+		msg := "internal error deleting list"
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, errors.New(msg))
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
 			Status:  500,
-			Message: err.Error()})
+			Message: msg})
 		return
 	}
 
@@ -155,52 +172,43 @@ func GetListByUserId(c *gin.Context) {
 	idParam := c.Param("userid")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
+		msg := "internal error while fetching list for user"
+
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, errors.New(msg))
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
-			Message: err.Error()})
+			Status:  500,
+			Message: msg})
 	}
 
 	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == "user not found" {
+		msg := "user and list not found"
+		loggerutils.ErrorLog(ctx, http.StatusBadRequest, errors.New(msg))
 
-		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
-
-		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
-			Status: 400,
-
-			Message: err.Error()})
+		c.JSON(http.StatusNotFound, h.BadRequestResponse{
+			Status:  404,
+			Message: msg})
 		return
 	} else if err != nil {
-		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
+		msg := "internal error while fetching list for user"
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, errors.New(msg))
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
-			Message: err.Error()})
+			Status:  500,
+			Message: msg})
 		return
 	}
 
 	list, err := s.ListManager.GetListForUser(user.Id)
-	if err != nil && err.Error() == "list record not found" {
-		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
-
-		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
-			Status: 400,
-
-			Message: err.Error()})
-		return
-	} else if err != nil {
-		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
+	if err != nil {
+		loggerutils.ErrorLog(ctx, http.StatusInternalServerError,
+			errors.New("error fetching list for user"))
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
-			Message: err.Error()})
+			Status:  500,
+			Message: "internal error while fetching list for user"})
 		return
 	}
-
 	c.JSON(http.StatusOK, &list)
 }

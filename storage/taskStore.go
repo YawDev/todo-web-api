@@ -24,14 +24,14 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 		err := errors.New("task record not found")
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong while fetching task")
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	}
@@ -41,7 +41,7 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 		err := errors.New("something went wrong while deleting task")
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	}
@@ -55,14 +55,14 @@ func (T *TaskStore) GetTask(id int) (*models.Task, error) {
 		err := errors.New("task record not found")
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong while fetching task")
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	}

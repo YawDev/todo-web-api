@@ -58,10 +58,10 @@ func Login(c *gin.Context) {
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
 	if err != nil && err.Error() == msg.AccountNotFound {
 
-		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
+		loggerutils.ErrorLog(ctx, http.StatusNotFound, err)
 
-		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
-			Status:  400,
+		c.JSON(http.StatusNotFound, h.BadRequestResponse{
+			Status:  404,
 			Message: err.Error()})
 		return
 	}
@@ -227,6 +227,7 @@ func RefreshToken(c *gin.Context) {
 
 	tokenStr, err := c.Cookie("refresh_token")
 	if err != nil {
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not fetch refresh from cookie"})
 		return
 	}

@@ -246,9 +246,9 @@ func ChangeStatus(c *gin.Context) {
 		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
+			Status:  500,
 			Message: err.Error()})
+		return
 	}
 
 	task, err := s.TaskManager.GetTask(id)
@@ -256,16 +256,14 @@ func ChangeStatus(c *gin.Context) {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
-			Status: 400,
-
+			Status:  400,
 			Message: err.Error()})
 		return
 	} else if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
+			Status:  500,
 			Message: err.Error()})
 		return
 	}
@@ -277,11 +275,11 @@ func ChangeStatus(c *gin.Context) {
 		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
+			Status:  500,
 			Message: err.Error()})
+		return
 	}
-
+	loggerutils.InfoLog(ctx, http.StatusOK, "Status updated for Task")
 	c.JSON(http.StatusOK, h.SaveResponse{
 		Status:  http.StatusCreated,
 		Message: "Task status updated successfully.",

@@ -16,7 +16,7 @@ func (L *ListStore) CreateList(list *models.List) (ID int, err error) {
 	if result.Error != nil {
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 	}
 	return list.Id, result.Error
@@ -29,14 +29,14 @@ func (L *ListStore) DeleteList(id int) (success bool, err error) {
 		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, errors.New(errMsg)
 	} else if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		errMsg := "something went wrong while fetching list"
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, errors.New(errMsg)
 	}
@@ -46,7 +46,7 @@ func (L *ListStore) DeleteList(id int) (success bool, err error) {
 		errMsg := "something went wrong while deleting list"
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, errors.New(errMsg)
 	}
@@ -61,14 +61,14 @@ func (L *ListStore) GetListForUser(id int) (*models.List, error) {
 		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, errors.New(errMsg)
 	} else if result.Error != nil {
 		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, errors.New(errMsg)
 	}
@@ -91,7 +91,7 @@ func (L *ListStore) GetList(id int) (*models.List, error) {
 		errMsg := "list record not found"
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, errors.New(errMsg)
 	}

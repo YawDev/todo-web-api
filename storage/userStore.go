@@ -24,14 +24,14 @@ func (U *UserStore) CreateUser(user *models.User) (ID int, err error) {
 		err := errors.New("user exists already")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(userQuery.Error.Error())
 		return 0, err
 	} else if userQuery.Error != nil && !errors.Is(userQuery.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("something went wrong creating new user")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(userQuery.Error.Error())
 		return 0, err
 	}
@@ -47,14 +47,14 @@ func (U *UserStore) DeleteUser(id int) (success bool, err error) {
 		err := errors.New("user not found")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	} else if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("something went wrong while fetching user")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	}
@@ -64,7 +64,7 @@ func (U *UserStore) DeleteUser(id int) (success bool, err error) {
 		err := errors.New("something went wrong while deleting User")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  "gorm.Db",
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	}
@@ -78,14 +78,14 @@ func (U *UserStore) GetUser(id int) (*models.User, error) {
 		err := errors.New("user not found")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  "gorm.Db",
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong fetching User")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	}
@@ -99,14 +99,14 @@ func (U *UserStore) FindExistingAccount(username string, password string) (*mode
 		err := errors.New("existing account not found")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
 		err := errors.New("something went wrong fetching User")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
-			"DbContext":  Context.Name(),
+			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	}

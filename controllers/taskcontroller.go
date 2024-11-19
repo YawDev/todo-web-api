@@ -7,6 +7,7 @@ import (
 
 	h "todo-web-api/helpers"
 	"todo-web-api/loggerutils"
+	"todo-web-api/messages"
 	models "todo-web-api/models"
 	s "todo-web-api/storage"
 
@@ -107,19 +108,17 @@ func DeleteTask(c *gin.Context) {
 	}
 
 	result, err := s.TaskManager.DeleteTask(id)
-	if err != nil && err.Error() == "task record not found" {
+	if err != nil && err.Error() == messages.TaskNotFoundInDb {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
-			Status: 400,
-
-			Message: err.Error()})
+			Status:  400,
+			Message: messages.NotFound})
 	} else if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 		c.JSON(http.StatusInternalServerError, h.ErrorResponse{
-			Status: 500,
-
-			Message: err.Error()})
+			Status:  500,
+			Message: messages.SomethingWentWrong})
 	}
 
 	c.JSON(http.StatusOK, h.DeleteResult{
@@ -164,12 +163,12 @@ func UpdateTask(c *gin.Context) {
 		loggerutils.ErrorLog(ctx, http.StatusInternalServerError, err)
 
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
+			"message": messages.SomethingWentWrong,
 		})
 	}
 
 	task, err := s.TaskManager.GetTask(id)
-	if err != nil && err.Error() == "task record not found" {
+	if err != nil && err.Error() == messages.TaskNotFoundInDb {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
@@ -252,7 +251,7 @@ func ChangeStatus(c *gin.Context) {
 	}
 
 	task, err := s.TaskManager.GetTask(id)
-	if err != nil && err.Error() == "task record not found" {
+	if err != nil && err.Error() == messages.TaskNotFoundInDb {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{

@@ -10,6 +10,7 @@ import (
 	"testing"
 	app "todo-web-api/controllers"
 	h "todo-web-api/helpers"
+	"todo-web-api/messages"
 	"todo-web-api/models"
 	"todo-web-api/storage"
 	m "todo-web-api/tests/mockmanagers"
@@ -105,7 +106,7 @@ func Test_Task_Cases(t *testing.T) {
 			TaskCase{
 				request: task,
 				taskManager: &m.MockTaskManager{DeleteTaskFn: func(id int) (bool, error) {
-					return false, errors.New("task record not found")
+					return false, errors.New(messages.TaskNotFoundInDb)
 				}},
 				listManager: &m.MockListManager{},
 			},
@@ -127,7 +128,7 @@ func Test_Task_Cases(t *testing.T) {
 			TaskCase{
 				request: task,
 				taskManager: &m.MockTaskManager{GetTaskFn: func(id int) (*models.Task, error) {
-					return nil, errors.New("task record not found")
+					return nil, errors.New(messages.TaskNotFoundInDb)
 				}},
 				listManager: &m.MockListManager{},
 			},

@@ -22,6 +22,16 @@ type BadRequestResponse struct {
 	Message string `json:"message" example:"Bad request"`
 }
 
+type NotFoundResponse struct {
+	Status  int    `json:"status" example:"404"`
+	Message string `json:"message" example:"Not Found"`
+}
+
+type UnauthorizedResponse struct {
+	Status  int    `json:"status" example:"401"`
+	Message string `json:"message" example:"Unauthorized"`
+}
+
 type SaveResponse struct {
 	Status  int    `json:"status" example:"200"`
 	Message string `json:"message" example:"Successfully saved"`

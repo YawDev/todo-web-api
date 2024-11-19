@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"todo-web-api/messages"
 	models "todo-web-api/models"
 
 	"github.com/sirupsen/logrus"
@@ -21,14 +22,14 @@ func (T *TaskStore) DeleteTask(id int) (success bool, err error) {
 	result := Context.First(&task, id)
 
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		err := errors.New("task record not found")
+		err := errors.New(messages.TaskNotFoundInDb)
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
 			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return false, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong while fetching task")
+		err := errors.New(messages.TaskQueryInternalError)
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
 			"DbContext":  "mysql",
@@ -52,14 +53,14 @@ func (T *TaskStore) GetTask(id int) (*models.Task, error) {
 	var task models.Task
 	result := Context.First(&task, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		err := errors.New("task record not found")
+		err := errors.New(messages.TaskNotFoundInDb)
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
 			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong while fetching task")
+		err := errors.New(messages.TaskQueryInternalError)
 		log.WithFields(logrus.Fields{
 			"LoggerName": "TaskStore",
 			"DbContext":  "mysql",

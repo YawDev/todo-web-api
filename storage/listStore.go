@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"todo-web-api/messages"
 	models "todo-web-api/models"
 
 	"github.com/sirupsen/logrus"
@@ -26,7 +27,7 @@ func (L *ListStore) DeleteList(id int) (success bool, err error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		errMsg := "list record not found"
+		errMsg := messages.ListNotFoundInDb
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
 			"DbContext":  "mysql",
@@ -57,15 +58,14 @@ func (L *ListStore) GetListForUser(id int) (*models.List, error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-
-		errMsg := "list record not found"
+		errMsg := messages.ListNotFoundInDb
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
 			"DbContext":  "mysql",
 		}).Error(result.Error.Error())
 		return nil, errors.New(errMsg)
 	} else if result.Error != nil {
-		errMsg := "list record not found"
+		errMsg := messages.ListNotFoundInDb
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
 			"DbContext":  "mysql",
@@ -81,14 +81,16 @@ func (L *ListStore) GetList(id int) (*models.List, error) {
 	var list models.List
 	result := Context.First(&list, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		errMsg := "list record not found"
+		errMsg := messages.ListNotFoundInDb
+
 		log.WithFields(logrus.Fields{
 			"error": errMsg,
 		}).Error(result.Error)
 		return nil, result.Error
 	} else if result.Error != nil {
 
-		errMsg := "list record not found"
+		errMsg := messages.ListNotFoundInDb
+
 		log.WithFields(logrus.Fields{
 			"LoggerName": "ListStore",
 			"DbContext":  "mysql",

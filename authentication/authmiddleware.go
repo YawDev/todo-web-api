@@ -44,12 +44,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			loggerutils.ErrorLog(c.Request.Context(), http.StatusUnauthorized, err)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
+			return
 		}
 
 		if _, ok := activeTokens[claims.Username]; !ok {
 			loggerutils.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New("token unauthorized"))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "token unauthorized"})
 			c.Abort()
+			return
 		}
 		payload(claims, c)
 		c.Next()

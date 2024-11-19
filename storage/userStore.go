@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"todo-web-api/loggerutils"
+	"todo-web-api/messages"
 	models "todo-web-api/models"
 
 	"github.com/sirupsen/logrus"
@@ -20,12 +21,12 @@ func (U *UserStore) CreateUser(user *models.User) (ID int, err error) {
 	var existingUser models.User
 
 	userQuery := Context.Where("Username = ?", user.Username).First(&existingUser)
-	if userQuery.Error == nil {
+	if existingUser.Id > 0 {
 		err := errors.New("user exists already")
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
 			"DbContext":  "mysql",
-		}).Error(userQuery.Error.Error())
+		}).Error("Existing user found in Db.")
 		return 0, err
 	} else if userQuery.Error != nil && !errors.Is(userQuery.Error, gorm.ErrRecordNotFound) {
 		err := errors.New("something went wrong creating new user")
@@ -82,7 +83,7 @@ func (U *UserStore) GetUser(id int) (*models.User, error) {
 		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong fetching User")
+		err := errors.New(messages.UserQueryInternalError)
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
 			"DbContext":  "mysql",
@@ -103,7 +104,7 @@ func (U *UserStore) FindExistingAccount(username string, password string) (*mode
 		}).Error(result.Error.Error())
 		return nil, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong fetching User")
+		err := errors.New(messages.UserQueryInternalError)
 		log.WithFields(logrus.Fields{
 			"LoggerName": loggerName,
 			"DbContext":  "mysql",

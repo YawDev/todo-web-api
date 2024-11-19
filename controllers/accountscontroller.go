@@ -60,9 +60,9 @@ func Login(c *gin.Context) {
 
 		loggerutils.ErrorLog(ctx, http.StatusNotFound, err)
 
-		c.JSON(http.StatusNotFound, h.BadRequestResponse{
+		c.JSON(http.StatusNotFound, h.NotFoundResponse{
 			Status:  404,
-			Message: err.Error()})
+			Message: msg.AccountNotFound})
 		return
 	}
 
@@ -201,10 +201,10 @@ func GetUserById(c *gin.Context) {
 
 	user, err := s.UserManager.GetUser(id)
 	if err != nil && err.Error() == msg.UserNotFound {
-		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
-		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
-			Status:  400,
-			Message: err.Error(),
+		loggerutils.ErrorLog(ctx, http.StatusNotFound, err)
+		c.JSON(http.StatusNotFound, h.NotFoundResponse{
+			Status:  404,
+			Message: msg.UserNotFound,
 		})
 		return
 	} else if err != nil {
@@ -235,13 +235,13 @@ func RefreshToken(c *gin.Context) {
 	claims, err := auth.ParseRefreshToken(tokenStr)
 	if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": msg.InvalidRefreshToken})
 		return
 	}
 
 	if !auth.IsRefreshTokenActive(claims.Username) {
 		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "refresh token unauthorized"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": msg.UnauthorizedRefreshToken})
 		return
 	}
 

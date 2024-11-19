@@ -2,9 +2,10 @@ package storagelite
 
 import (
 	"errors"
-	"log"
+	"todo-web-api/messages"
 	models "todo-web-api/models"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -21,19 +22,28 @@ func (T *TaskStoreLite) DeleteTask(id int) (success bool, err error) {
 	result := Context.First(&task, id)
 
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		err := errors.New("task record not found")
-		log.Println(err.Error(), err)
+		err := errors.New(messages.TaskNotFoundInDb)
+		log.WithFields(logrus.Fields{
+			"LoggerName": "TaskStoreLite",
+			"DbContext":  "sqlite",
+		}).Error(err)
 		return false, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong")
-		log.Println(err.Error(), err)
+		err := errors.New(messages.TaskQueryInternalError)
+		log.WithFields(logrus.Fields{
+			"LoggerName": "TaskStoreLite",
+			"DbContext":  "sqlite",
+		}).Error(err)
 		return false, err
 	}
 
 	result = Context.Delete(&task)
 	if result.Error != nil {
-		err := errors.New("something went wrong")
-		log.Println(err.Error(), err)
+		err := errors.New(messages.TaskQueryInternalError)
+		log.WithFields(logrus.Fields{
+			"LoggerName": "TaskStoreLite",
+			"DbContext":  "sqlite",
+		}).Error(err)
 		return false, err
 	}
 	return true, nil
@@ -43,12 +53,18 @@ func (T *TaskStoreLite) GetTask(id int) (*models.Task, error) {
 	var task models.Task
 	result := Context.First(&task, id)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		err := errors.New("task record not found")
-		log.Println(err.Error(), result.Error)
+		err := errors.New(messages.TaskNotFoundInDb)
+		log.WithFields(logrus.Fields{
+			"LoggerName": "TaskStoreLite",
+			"DbContext":  "sqlite",
+		}).Error(result.Error)
 		return nil, err
 	} else if result.Error != nil {
-		err := errors.New("something went wrong")
-		log.Println(err.Error(), result.Error)
+		err := errors.New(messages.TaskQueryInternalError)
+		log.WithFields(logrus.Fields{
+			"LoggerName": "TaskStoreLite",
+			"DbContext":  "sqlite",
+		}).Error(result.Error)
 		return nil, err
 	}
 	return &task, nil

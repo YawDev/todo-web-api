@@ -5,15 +5,18 @@ import (
 	//"log"
 	"sync"
 	"time"
+	"todo-web-api/loggerutils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
+var ActiveTokens = make(map[string]string)
+
 var jwtKey = []byte("Secret_Key")
-var activeTokens = make(map[string]string)
 var refreshTokens = make(map[string]string)
 var mutex = &sync.Mutex{}
+var log = loggerutils.GetLogger()
 
 type Claims struct {
 	Username string
@@ -24,7 +27,7 @@ type Claims struct {
 func IsTokenActive(username string) bool {
 	mutex.Lock()
 	defer mutex.Unlock()
-	_, exists := activeTokens[username]
+	_, exists := ActiveTokens[username]
 	return exists
 }
 
@@ -133,7 +136,7 @@ func ParseRefreshToken(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
-func payload(claims *Claims, c *gin.Context) {
+func Payload(claims *Claims, c *gin.Context) {
 	c.Set("user_id", claims.UserID)
 	c.Set("username", claims.Username)
 }
@@ -141,13 +144,13 @@ func payload(claims *Claims, c *gin.Context) {
 func SaveToken(username, token string) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	activeTokens[username] = token
+	ActiveTokens[username] = token
 }
 
 func RemoveToken(username string) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	delete(activeTokens, username)
+	delete(ActiveTokens, username)
 }
 
 func SaveRefreshToken(username, token string) {

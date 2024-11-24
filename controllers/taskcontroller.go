@@ -25,7 +25,7 @@ import (
 //	@Security		BearerAuth
 //	@Param			listid	path		int						true	"List ID"
 //	@Param			Request	body		h.SaveTask				true	"Add Task"
-//	@Success		200		{object}	h.SaveResponse		"Successful"
+//	@Success		200		{object}	h.SaveResponse			"Successful"
 //	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"	//	Failed	due	to	bad	request	(e.g., validation error)
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //	@Router			/CreateTask/{listid} [post]
@@ -220,7 +220,7 @@ func UpdateTask(c *gin.Context) {
 //	@Security		BearerAuth
 //	@Param			id		path		int						true	"id"
 //	@Param			Request	body		h.SetStatus				true	"Change Status"
-//	@Success		200		{object}	h.SaveResponse		"Successful"
+//	@Success		200		{object}	h.SaveResponse			"Successful"
 //	@Failure		400		{object}	h.BadRequestResponse	"Bad Request"
 //	@Failure		500		{object}	h.ErrorResponse			"Internal Server Error"
 //

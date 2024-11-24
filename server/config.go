@@ -1,8 +1,9 @@
-package main
+package server
 
 import (
 	"os"
 
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,6 +20,7 @@ type App struct {
 	Environment string `yaml:"environment"`
 	Port        string `yaml:"port"`
 	Host        string `yaml:"host"`
+	BindAddress string `yaml:"bind_address"`
 }
 
 type Database struct {
@@ -50,7 +52,7 @@ type CORSConfig struct {
 	AllowCredentials bool     `yaml:"allow_credentials"`
 }
 
-func loadConfig(filename string) (*Config, error) {
+func readConfigFile(filename string) (*Config, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -65,4 +67,15 @@ func loadConfig(filename string) (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+func GetConfigSettings() (*Config, error) {
+	config, err := readConfigFile("config-local.yaml")
+	if err != nil {
+		Log.WithFields(logrus.Fields{
+			"Error": "Unable to load config from yaml file",
+		}).Fatal(err.Error())
+		return nil, err
+	}
+	return config, nil
 }

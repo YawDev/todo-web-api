@@ -8,6 +8,7 @@ import (
 	"time"
 	h "todo-web-api/helpers"
 	"todo-web-api/loggerutils"
+	"todo-web-api/messages"
 	models "todo-web-api/models"
 	s "todo-web-api/storage"
 
@@ -201,6 +202,15 @@ func GetListByUserId(c *gin.Context) {
 	}
 
 	list, err := s.ListManager.GetListForUser(user.Id)
+	if err != nil && err.Error() == messages.ListNotFoundInDb {
+		loggerutils.ErrorLog(ctx, http.StatusNotFound,
+			errors.New(messages.ListNotFoundInDb))
+
+		c.JSON(http.StatusNotFound, h.ErrorResponse{
+			Status:  404,
+			Message: messages.ListNotFoundInDb})
+		return
+	}
 	if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusInternalServerError,
 			errors.New("error fetching list for user"))

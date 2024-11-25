@@ -2,6 +2,7 @@ package server
 
 import (
 	"os"
+	l "todo-web-api/loggerutils"
 
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
@@ -69,13 +70,13 @@ func readConfigFile(filename string) (*Config, error) {
 	return &config, nil
 }
 
-func GetConfigSettings() (*Config, error) {
-	config, err := readConfigFile("config-local.yaml")
+func GetConfigSettings() *Config {
+	config, err := readConfigFile("config.yaml")
 	if err != nil {
-		Log.WithFields(logrus.Fields{
+		l.Log.WithFields(logrus.Fields{
 			"Error": "Unable to load config from yaml file",
 		}).Fatal(err.Error())
-		return nil, err
+		return nil
 	}
-	return config, nil
+	return config
 }

@@ -18,35 +18,32 @@ import (
 )
 
 type Service struct {
+	config *Config
+	logger *loggerutils.LogUtil
 }
 
-var config *Config
-var Log *loggerutils.LogUtil = loggerutils.NewLogger()
+func NewService(c *Config, l *loggerutils.LogUtil) *Service {
+	return &Service{
+		config: c,
+		logger: l,
+	}
+}
 
 func (s *Service) Start(r *gin.Engine) {
-	s.getConfig()
 	s.connectToSQL()
 	s.corsConfiguration(r)
-	s.swaggerSetup(r)
-	if err := r.Run(config.App.Host + ":" + config.App.Port); err != nil {
-		Log.WithFields(logrus.Fields{"Error": "Unable to start application",
-			"Port": config.App.Port,
+	if s.config.Swagger.Enabled {
+		s.swaggerSetup(r)
+	}
+	if err := r.Run(s.config.App.Host + ":" + s.config.App.Port); err != nil {
+		s.logger.WithFields(logrus.Fields{"Error": "Unable to start application",
+			"Port": s.config.App.Port,
 		}).Fatal(err)
 	}
 }
 
-func (s *Service) getConfig() {
-	c, err := GetConfigSettings()
-	if err != nil {
-		Log.WithFields(logrus.Fields{
-			"Error": "Unable to fetch appsettings from config.",
-		}).Fatal(err.Error())
-	}
-	config = c
-}
-
 func (s *Service) connectToSQL() {
-	dbConfigs := config.Database
+	dbConfigs := s.config.Database
 	store.ConfigureDb(dbConfigs.UseSQLite)
 	Db := store.StoreManager
 	Db.Connect(dbConfigs.Username, dbConfigs.Password, dbConfigs.Host, dbConfigs.Port, dbConfigs.Name)
@@ -54,18 +51,16 @@ func (s *Service) connectToSQL() {
 
 func (s *Service) corsConfiguration(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{config.CORSConfig.AllowedOrigins[0], config.CORSConfig.AllowedOrigins[1]},
-		AllowMethods: []string{config.CORSConfig.AllowedMethods[0], config.CORSConfig.AllowedMethods[1],
-			config.CORSConfig.AllowedMethods[2],
-			config.CORSConfig.AllowedMethods[3]},
-		AllowHeaders:     []string{config.CORSConfig.AllowedHeaders[0], config.CORSConfig.AllowedHeaders[1]},
+		AllowOrigins:     s.config.CORSConfig.AllowedOrigins,
+		AllowMethods:     s.config.CORSConfig.AllowedMethods,
+		AllowHeaders:     s.config.CORSConfig.AllowedHeaders,
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: config.CORSConfig.AllowCredentials,
+		AllowCredentials: s.config.CORSConfig.AllowCredentials,
 	}))
 }
 
 func (s *Service) swaggerSetup(r *gin.Engine) {
-	docs.SwaggerInfo.Host = config.App.Host + ":" + config.App.Port
+	docs.SwaggerInfo.Host = s.config.App.Host + ":" + s.config.App.Port
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
 	v1 := r.Group("/api/v1")
@@ -77,9 +72,9 @@ func (s *Service) swaggerSetup(r *gin.Engine) {
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	go func() {
-		err := s.openBrowser("http://" + config.App.Host + ":" + config.App.Port + config.Swagger.DocPath)
+		err := s.openBrowser("http://" + s.config.App.Host + ":" + s.config.App.Port + s.config.Swagger.DocPath)
 		if err != nil {
-			Log.WithFields(logrus.Fields{
+			s.logger.WithFields(logrus.Fields{
 				"Error": "Something went wrong while opening swagger on start",
 			}).Error(err.Error())
 		}

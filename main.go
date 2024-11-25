@@ -15,11 +15,10 @@ import (
 	gin "github.com/gin-gonic/gin"
 )
 
-var Log *loggerutils.LogUtil = loggerutils.NewLogger()
-
 func main() {
 	r := gin.Default()
-	s := &s.Service{}
+	logger := loggerutils.Log
+	config := s.GetConfigSettings()
+	s := s.NewService(config, logger)
 	s.Start(r)
-
 }

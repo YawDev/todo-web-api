@@ -86,7 +86,7 @@ func (s *Service) RouteSetup(r *gin.RouterGroup) {
 	v1 := r.Group("/", middleware.RequestIDMiddleware())
 	{
 		v1.GET("/Home", middleware.RequestIDMiddleware(), app.Home)
-		v1.GET("/GetList/:userid", middleware.RequestIDMiddleware(), app.GetListByUserId)
+		v1.GET("/Verify-Auth", middleware.RequestIDMiddleware(), app.VerifyAuth)
 		v1.POST("/Login", middleware.RequestIDMiddleware(), app.Login)
 		v1.POST("/Register", middleware.RequestIDMiddleware(), app.Register)
 		v1.POST("/RefreshToken", middleware.RequestIDMiddleware(), app.RefreshToken)
@@ -96,6 +96,7 @@ func (s *Service) RouteSetup(r *gin.RouterGroup) {
 	{
 		auth.GET("/GetUser/:id", app.GetUserById)
 		auth.POST("/CreateList/:id", app.CreateListForUser)
+		auth.GET("/GetList/:userid", app.GetListByUserId)
 		auth.DELETE("/DeleteList/:id", app.DeleteList)
 		auth.POST("/CreateTask/:listid", app.AddTaskToList)
 		auth.DELETE("/DeleteTask/:id", app.DeleteTask)

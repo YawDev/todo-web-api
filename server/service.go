@@ -86,7 +86,7 @@ func (s *Service) RouteSetup(r *gin.RouterGroup) {
 	v1 := r.Group("/", middleware.RequestIDMiddleware())
 	{
 		v1.GET("/Home", middleware.RequestIDMiddleware(), app.Home)
-		v1.GET("/Verify-Auth", middleware.RequestIDMiddleware(), app.VerifyAuth)
+		v1.GET("/AuthStatus", middleware.RequestIDMiddleware(), app.AuthStatus)
 		v1.POST("/Login", middleware.RequestIDMiddleware(), app.Login)
 		v1.POST("/Register", middleware.RequestIDMiddleware(), app.Register)
 		v1.POST("/RefreshToken", middleware.RequestIDMiddleware(), app.RefreshToken)

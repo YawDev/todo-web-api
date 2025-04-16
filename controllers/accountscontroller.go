@@ -99,7 +99,7 @@ func Login(c *gin.Context) {
 		"access_token",
 		token,
 		3600,
-		c.Request.RequestURI,
+		"/",
 		"localhost",
 		true,
 		true,
@@ -301,7 +301,7 @@ func Logout(c *gin.Context) {
 	})
 }
 
-func VerifyAuth(c *gin.Context) {
+func AuthStatus(c *gin.Context) {
 	ctx := c.Request.Context()
 	tokenStr, err := c.Cookie("access_token")
 	if err != nil {

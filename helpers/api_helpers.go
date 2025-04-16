@@ -33,6 +33,7 @@ type UnauthorizedResponse struct {
 }
 
 type SaveResponse struct {
+	AccessToken string `json:"access_token"`
 	Status  int    `json:"status" example:"200"`
 	Message string `json:"message" example:"Successfully saved"`
 	Id      int    `json:"id" example:"1"`

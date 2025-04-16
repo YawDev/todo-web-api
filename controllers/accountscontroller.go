@@ -99,7 +99,7 @@ func Login(c *gin.Context) {
 		"access_token",
 		token,
 		3600,
-		c.Request.RequestURI,
+		"/",
 		"localhost",
 		true,
 		true,
@@ -120,7 +120,9 @@ func Login(c *gin.Context) {
 	auth.SaveRefreshToken(existingAccount.Username, refreshToken)
 	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessLogin)
 	resp := h.SaveResponse{Status: 200,
-		Message: "Successful Login"}
+		Message: "Successful Login",
+		AccessToken:  token,
+	}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	c.JSON(200,
@@ -297,6 +299,36 @@ func Logout(c *gin.Context) {
 		Status:  200,
 		Message: msg.SuccessLogout,
 	})
+}
+
+func AuthStatus(c *gin.Context) {
+	ctx := c.Request.Context()
+	tokenStr, err := c.Cookie("access_token")
+	if err != nil {
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not fetch token from cookie"})
+		return
+	}
+
+	claims, err := auth.ParseToken(tokenStr)
+	if err != nil {
+		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !auth.IsTokenActive(claims.Username) {
+		loggerutils.InfoLog(ctx, http.StatusUnauthorized, msg.InvalidToken)
+		c.JSON(http.StatusUnauthorized, gin.H{"Message": msg.InvalidToken, "Status":401})
+		return
+	}
+
+	message := "User is currently logged in"
+	loggerutils.InfoLog(c, http.StatusOK, message)
+
+	c.JSON(http.StatusOK, h.SuccessResponse{
+			Status:  200,
+			Message: message})
 }
 
 func Hash(password string) []byte {

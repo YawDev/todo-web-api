@@ -13,33 +13,41 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		l.Log.WithFields(logrus.Fields{"LoggerName": "Auth Middleware"}).Info("fetching access token from header")
-		tokenStr := c.GetHeader("Authorization")
-		errMessage := ""
 
-		if tokenStr == "" {
-			errMessage = "access token required"
-			l.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New(errMessage))
-			c.JSON(http.StatusUnauthorized, gin.H{
+		var tokenStr string
+		var errMessage string
+		authHeader := c.GetHeader("Authorization")
+
+		if authHeader != ""{
+			l.Log.WithFields(logrus.Fields{"LoggerName": "Auth Middleware"}).Info("fetching access token from header")
+			
+			if(!strings.HasPrefix(authHeader, "Bearer")){
+				errMessage = "access token Bearer required"
+				l.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New(errMessage))
+				c.JSON(http.StatusUnauthorized, gin.H{
 				"error": errMessage,
-			})
-			c.Abort()
-			return
+				})
+				c.Abort()
+				return
+			}
+			tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
+		}else{
+			l.Log.WithFields(logrus.Fields{"LoggerName": "Auth Middleware"}).Info("fetching access token from cookies")
+		    
+			cookieToken, err := c.Cookie("access_token")
+			if err != nil || cookieToken == ""{
+				errMessage = "access token required"
+				l.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New(errMessage))
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"error": errMessage,
+				})
+				c.Abort()
+				return
+			}
+			tokenStr = cookieToken
 		}
 
-		if !strings.HasPrefix(tokenStr, "Bearer") {
-			errMessage = "access token Bearer required"
-			l.ErrorLog(c.Request.Context(), http.StatusUnauthorized, errors.New(errMessage))
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": errMessage,
-			})
-			c.Abort()
-			return
-		}
-
-		tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
 		claims, err := auth.ParseToken(tokenStr)
-
 		if err != nil {
 			l.ErrorLog(c.Request.Context(), http.StatusUnauthorized, err)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})

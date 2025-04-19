@@ -4,7 +4,6 @@ import (
 	"errors"
 	http "net/http"
 	"strconv"
-	"strings"
 	"time"
 	auth "todo-web-api/authentication"
 	h "todo-web-api/helpers"
@@ -95,15 +94,16 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie(
-		"access_token",
-		token,
-		3600,
-		"/",
-		"localhost",
-		true,
-		true,
-	)
+	http.SetCookie(c.Writer, &http.Cookie{
+	Name:     "access_token",
+	Value:    token,
+	Path:     "/",
+	Domain:   "",
+	MaxAge:   3600,
+	HttpOnly: true,
+	Secure:   true,
+	SameSite: http.SameSiteNoneMode,
+})
 
 	cookie := &http.Cookie{
 		Name:     "refresh_token",
@@ -278,14 +278,13 @@ func RefreshToken(c *gin.Context) {
 func Logout(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	tokenStr := c.GetHeader("Authorization")
-	if tokenStr == "" {
+	cookieToken, err := c.Cookie("access_token")
+	if err != nil  || cookieToken == ""{
 		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, errors.New(msg.NoTokenProvided))
 		c.JSON(http.StatusUnauthorized, gin.H{"message": msg.NoTokenProvided})
 	}
 
-	tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
-	claims, err := auth.ParseToken(tokenStr)
+	claims, err := auth.ParseToken(cookieToken)
 	if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, errors.New(msg.InvalidToken))
 		c.JSON(http.StatusUnauthorized, gin.H{"message": msg.InvalidToken})
@@ -293,6 +292,10 @@ func Logout(c *gin.Context) {
 
 	auth.RemoveToken(claims.Username)
 	auth.RemoveRefreshToken(claims.Username)
+
+	//Remove tokens from browser cookies
+	c.SetCookie("access_token", "", -1, "/", "", true, true) 
+	c.SetCookie("refresh_token", "", -1, "/", "", true, true) 
 
 	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessLogout)
 	c.JSON(http.StatusOK, h.ErrorResponse{

@@ -119,9 +119,12 @@ func Login(c *gin.Context) {
 	auth.SaveToken(existingAccount.Username, token)
 	auth.SaveRefreshToken(existingAccount.Username, refreshToken)
 	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessLogin)
-	resp := h.SaveResponse{Status: 200,
+	resp := h.AuthStatusResponse{Status: 200,
 		Message: "Successful Login",
-		AccessToken:  token,
+		User:  h.UserContext{
+			Username: existingAccount.Username,
+			Id: existingAccount.Id,
+		},
 	}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -329,9 +332,14 @@ func AuthStatus(c *gin.Context) {
 	message := "User is currently logged in"
 	loggerutils.InfoLog(c, http.StatusOK, message)
 
-	c.JSON(http.StatusOK, h.SuccessResponse{
+	c.JSON(http.StatusOK, h.AuthStatusResponse{
 			Status:  200,
-			Message: message})
+			Message: message,
+			User: h.UserContext{
+				Username: claims.Username,
+				Id:  claims.UserID,
+
+			}})
 }
 
 func Hash(password string) []byte {

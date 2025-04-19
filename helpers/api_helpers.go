@@ -12,6 +12,12 @@ type SuccessResponse struct {
 	Message string `json:"message" example:"Success"`
 }
 
+type AuthStatusResponse struct {
+	Status  int    `json:"status" example:"200"`
+	Message string `json:"message" example:"Success"`
+	User    UserContext  `json:"authenticatedUser"`
+}
+
 type ErrorResponse struct {
 	Status  int    `json:"status" example:"500"`
 	Message string `json:"message" example:"Something went wrong"`
@@ -33,7 +39,7 @@ type UnauthorizedResponse struct {
 }
 
 type SaveResponse struct {
-	AccessToken string `json:"access_token"`
+	Username string `json:"username"`
 	Status  int    `json:"status" example:"200"`
 	Message string `json:"message" example:"Successfully saved"`
 	Id      int    `json:"id" example:"1"`
@@ -48,6 +54,11 @@ type DeleteResult struct {
 type UserResult struct {
 	Username  string    `json:"username"`
 	CreatedAt time.Time `json:"createdAt"`
+}
+
+type UserContext struct {
+	Username  string    `json:"username"`
+	Id      int    `json:"id" example:"1"`
 }
 
 type SaveTask struct {

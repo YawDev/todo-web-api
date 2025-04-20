@@ -36,22 +36,18 @@ var log = loggerutils.GetLogger()
 func Login(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req h.User
-	var errMessage = ""
 	if err := c.ShouldBindJSON(&req); err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var isLoggedIn = auth.IsTokenActive(req.Username)
-	if isLoggedIn {
-		errMessage = msg.AlreadyLoggedIn
-		loggerutils.ErrorLog(c, http.StatusBadRequest, errors.New(errMessage))
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
-			Message: errMessage})
-		return
+			Message: err.Error()})		
+			return
+	}
+
+	if auth.IsTokenActive(req.Username) || auth.IsRefreshTokenActive(req.Username) {
+		auth.RemoveToken(req.Username)
+		auth.RemoveRefreshToken(req.Username)
 	}
 
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
@@ -312,7 +308,7 @@ func AuthStatus(c *gin.Context) {
 	tokenStr, err := c.Cookie("access_token")
 	if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not fetch token from cookie"})
+		c.JSON(http.StatusUnauthorized, h.AuthStatusResponse{Message: "could not fetch token from cookie", Status: 401})
 		return
 	}
 

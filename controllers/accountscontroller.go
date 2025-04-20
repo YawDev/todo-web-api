@@ -36,22 +36,18 @@ var log = loggerutils.GetLogger()
 func Login(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req h.User
-	var errMessage = ""
 	if err := c.ShouldBindJSON(&req); err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusBadRequest, err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var isLoggedIn = auth.IsTokenActive(req.Username)
-	if isLoggedIn {
-		errMessage = msg.AlreadyLoggedIn
-		loggerutils.ErrorLog(c, http.StatusBadRequest, errors.New(errMessage))
 
 		c.JSON(http.StatusBadRequest, h.BadRequestResponse{
 			Status:  400,
-			Message: errMessage})
-		return
+			Message: err.Error()})		
+			return
+	}
+
+	if auth.IsTokenActive(req.Username) || auth.IsRefreshTokenActive(req.Username) {
+		auth.RemoveToken(req.Username)
+		auth.RemoveRefreshToken(req.Username)
 	}
 
 	existingAccount, err := s.UserManager.FindExistingAccount(req.Username, req.Password)
@@ -119,9 +115,12 @@ func Login(c *gin.Context) {
 	auth.SaveToken(existingAccount.Username, token)
 	auth.SaveRefreshToken(existingAccount.Username, refreshToken)
 	loggerutils.InfoLog(ctx, http.StatusOK, msg.SuccessLogin)
-	resp := h.SaveResponse{Status: 200,
+	resp := h.AuthStatusResponse{Status: 200,
 		Message: "Successful Login",
-		AccessToken:  token,
+		User:  h.UserContext{
+			Username: existingAccount.Username,
+			Id: existingAccount.Id,
+		},
 	}
 	c.Header("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -309,7 +308,7 @@ func AuthStatus(c *gin.Context) {
 	tokenStr, err := c.Cookie("access_token")
 	if err != nil {
 		loggerutils.ErrorLog(ctx, http.StatusUnauthorized, err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not fetch token from cookie"})
+		c.JSON(http.StatusUnauthorized, h.AuthStatusResponse{Message: "could not fetch token from cookie", Status: 401})
 		return
 	}
 
@@ -329,9 +328,14 @@ func AuthStatus(c *gin.Context) {
 	message := "User is currently logged in"
 	loggerutils.InfoLog(c, http.StatusOK, message)
 
-	c.JSON(http.StatusOK, h.SuccessResponse{
+	c.JSON(http.StatusOK, h.AuthStatusResponse{
 			Status:  200,
-			Message: message})
+			Message: message,
+			User: h.UserContext{
+				Username: claims.Username,
+				Id:  claims.UserID,
+
+			}})
 }
 
 func Hash(password string) []byte {

@@ -8,3 +8,27 @@ __debug_bin167954544
 config-local.yaml
 
 config.yaml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Compiled binaries
+todo-web-api
+debugtest
+*.exe
+*.out
+__debug_bin*
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Test / coverage artifacts
+coverage.html
+*.test
+
+# Logs
+*.log

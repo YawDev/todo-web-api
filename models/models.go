@@ -8,7 +8,7 @@ type Task struct {
 	Id          int       `gorm:"primaryKey" json:"id"`
 	Title       string    `gorm:"size:255;not null" json:"title"`
 	Description string    `json:"description"`
-	IsCompleted bool      `gorm:"default:false" json:"IsCompleted"`
+	IsCompleted bool      `gorm:"default:false" json:"isCompleted"`
 	ListId      int       `gorm:"foreignkey:ListId" json:"list_id"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 }

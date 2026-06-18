@@ -67,5 +67,5 @@ type SaveTask struct {
 }
 
 type SetStatus struct {
-	IsCompleted bool `binding:"required"`
+	IsCompleted bool 
 }

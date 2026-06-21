@@ -19,6 +19,11 @@ swag init           # regenerate Swagger docs after changing handler annotations
 
 Default config uses SQLite (`todo.db`), so no DB setup is needed to run.
 
+## Deploy / Docker
+
+- Deploys run via GitHub Actions (`.github/workflows/fly-deploy.yml`) on push to `master`: it runs `go test ./...`, then `flyctl deploy --remote-only` (needs the `FLY_API_TOKEN` repo secret).
+- The Docker image does **not** include `config.yaml` (it's gitignored — holds local DB creds — so it isn't in CI's checkout). The container loads `config.production.yaml` via `CONFIG_FILE` (set in `fly.toml`). So if you `docker build`/run the image locally, set `CONFIG_FILE=config.production.yaml` or it won't find a config; for normal local dev just use `go run .`.
+
 ## Architecture
 
 Layered, with interface-based storage selected at startup:

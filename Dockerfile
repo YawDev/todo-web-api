@@ -25,7 +25,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /todo-api /app/todo-api
-COPY config.yaml /app/config.yaml
+# config.yaml is gitignored (holds local DB creds) and unused in prod —
+# the container loads config.production.yaml via CONFIG_FILE (see fly.toml).
 COPY config.production.yaml /app/config.production.yaml
 
 # The SQLite file lives on a mounted volume; see fly.toml + SQLITE_PATH.

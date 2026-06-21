@@ -1,6 +1,6 @@
 # Fly.io config for the Todo Service API.
-# `app` must be globally unique — change it if `fly launch` reports it's taken.
-app = "todo-service-yaw"
+# `app` must match the app created on Fly (see `fly apps list`).
+app = "todo-service-yaw-8899"
 primary_region = "iad"
 
 [build]

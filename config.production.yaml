@@ -27,7 +27,7 @@ swagger:
 
 # Informational only (not read at runtime): this service's own public base URL.
 api:
-  base_url: "https://todo-service-yaw.fly.dev/api/v1"
+  base_url: "https://todo-service-yaw-8899.fly.dev/api/v1"
   timeout: 30
 
 cors:

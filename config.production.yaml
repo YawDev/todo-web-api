@@ -1,0 +1,45 @@
+app:
+  name: "Todo Service"
+  environment: "production"
+  port: 8080
+  host: ""
+  bind_address: 0.0.0.0
+
+# MySQL stays the intended "real" database (to be hosted on a free provider
+# later, replacing AWS). For now useSQLite flips that off and runs on SQLite.
+# Credentials are kept out of source — supply them via env/secrets when MySQL
+# is enabled. The SQLite file path comes from SQLITE_PATH (a mounted volume).
+database:
+  driver: "mysql"
+  host: ""
+  port: 3306
+  username: "admin"
+  password: ""
+  name: "todo_service"
+  ssl_mode: "disable"
+  useSQLite: true
+
+# Swagger UI is disabled in production.
+swagger:
+  enabled: false
+  path: ""
+  doc_path: ""
+
+# Informational only (not read at runtime): this service's own public base URL.
+api:
+  base_url: "https://todo-service-yaw.fly.dev/api/v1"
+  timeout: 30
+
+cors:
+  allowed_origins:
+    - "https://todo-manager-yaw-dev.vercel.app"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+  allowed_headers:
+    - "Content-Type"
+    - "Authorization"
+    - "Cookie"
+  allow_credentials: true

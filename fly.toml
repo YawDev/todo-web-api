@@ -1,0 +1,25 @@
+# Fly.io config for the Todo Service API.
+# `app` must be globally unique — change it if `fly launch` reports it's taken.
+app = "todo-service-yaw"
+primary_region = "iad"
+
+[build]
+
+[env]
+  # Load the production config file (CORS, swagger off, environment, etc.).
+  CONFIG_FILE = "config.production.yaml"
+  PORT = "8080"
+  # SQLite lives on the mounted volume so data survives restarts/redeploys.
+  SQLITE_PATH = "/data/todo.db"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+# Persistent volume for the SQLite database file.
+[[mounts]]
+  source = "todo_data"
+  destination = "/data"

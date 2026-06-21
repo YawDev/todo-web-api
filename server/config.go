@@ -2,6 +2,7 @@ package server
 
 import (
 	"os"
+	"strings"
 	l "todo-web-api/loggerutils"
 
 	"github.com/sirupsen/logrus"
@@ -71,12 +72,46 @@ func readConfigFile(filename string) (*Config, error) {
 }
 
 func GetConfigSettings() *Config {
-	config, err := readConfigFile("config.yaml")
+	// CONFIG_FILE selects which config to load (e.g. config.production.yaml in
+	// deployment); defaults to config.yaml for local dev.
+	configFile := os.Getenv("CONFIG_FILE")
+	if configFile == "" {
+		configFile = "config.yaml"
+	}
+	config, err := readConfigFile(configFile)
 	if err != nil {
 		l.Log.WithFields(logrus.Fields{
 			"Error": "Unable to load config from yaml file",
+			"File":  configFile,
 		}).Fatal(err.Error())
 		return nil
 	}
+	applyEnvOverrides(config)
 	return config
+}
+
+// applyEnvOverrides lets the deployment environment override config.yaml
+// values without rebuilding the image. Anything unset falls back to the file.
+func applyEnvOverrides(config *Config) {
+	// APP_ENV marks the deployment (e.g. "production"); anything other than
+	// "local-development" disables dev-only behavior like auto-opening Swagger.
+	if env := os.Getenv("APP_ENV"); env != "" {
+		config.App.Environment = env
+	}
+	// Fly (and most platforms) inject the listening port via PORT.
+	if port := os.Getenv("PORT"); port != "" {
+		config.App.Port = port
+	}
+	// Comma-separated list of allowed CORS origins, e.g.
+	// "https://todo-manager-yaw-dev.vercel.app".
+	if origins := os.Getenv("CORS_ALLOWED_ORIGINS"); origins != "" {
+		parts := strings.Split(origins, ",")
+		trimmed := make([]string, 0, len(parts))
+		for _, p := range parts {
+			if v := strings.TrimSpace(p); v != "" {
+				trimmed = append(trimmed, v)
+			}
+		}
+		config.CORSConfig.AllowedOrigins = trimmed
+	}
 }

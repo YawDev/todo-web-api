@@ -249,6 +249,16 @@ go run .          # starts on http://localhost:8080
 
 With the default config (`useSQLite: true`) it creates/uses a local `todo.db` SQLite file and auto-migrates the schema — no database setup required. On start it also opens Swagger UI in your browser.
 
+### Demo credentials
+
+For demo purposes, a seeded account is available:
+
+| Username | Password |
+| --- | --- |
+| `prod_app` | `prod1` |
+
+Use these to log in via `/Login` (or the SPA) without registering a new account.
+
 ### Swagger / API docs
 
 With `swagger.enabled: true`, browse:

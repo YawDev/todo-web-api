@@ -57,7 +57,7 @@ func (L *ListStoreLite) DeleteList(id int) (success bool, err error) {
 
 func (L *ListStoreLite) GetListForUser(id int) (*models.List, error) {
 	var list models.List
-	result := Context.First(&list, id)
+	result := Context.Where("user_id = ?", id).Preload("Tasks").First(&list)
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 
 		errMsg := messages.ListNotFoundInDb
@@ -73,7 +73,6 @@ func (L *ListStoreLite) GetListForUser(id int) (*models.List, error) {
 		}).Error(result.Error)
 		return nil, errors.New(messages.ListQueryInternalError)
 	}
-	Context.Preload("Tasks").First(&list, id)
 	return &list, nil
 }
 

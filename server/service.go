@@ -34,8 +34,16 @@ func (s *Service) Start(r *gin.Engine) {
 	s.corsConfiguration(r)
 	if s.config.Swagger.Enabled {
 		s.swaggerSetup(r)
+	} else {
+		s.registerRoutes(r)
 	}
-	if err := r.Run(s.config.App.Host + ":" + s.config.App.Port); err != nil {
+	// Bind to 0.0.0.0 (BindAddress) so the server accepts external traffic
+	// inside a container; App.Host ("localhost") only works for local dev.
+	bindAddr := s.config.App.BindAddress
+	if bindAddr == "" {
+		bindAddr = "0.0.0.0"
+	}
+	if err := r.Run(bindAddr + ":" + s.config.App.Port); err != nil {
 		s.logger.WithFields(logrus.Fields{"Error": "Unable to start application",
 			"Port": s.config.App.Port,
 		}).Fatal(err)
@@ -59,10 +67,8 @@ func (s *Service) corsConfiguration(r *gin.Engine) {
 	}))
 }
 
-func (s *Service) swaggerSetup(r *gin.Engine) {
-	docs.SwaggerInfo.Host = s.config.App.Host + ":" + s.config.App.Port
-	docs.SwaggerInfo.BasePath = "/api/v1"
-
+// registerRoutes mounts the API routes under /api/v1, independent of Swagger.
+func (s *Service) registerRoutes(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 	{
 		eg := v1.Group("/")
@@ -70,15 +76,26 @@ func (s *Service) swaggerSetup(r *gin.Engine) {
 			s.RouteSetup(eg)
 		}
 	}
+}
+
+func (s *Service) swaggerSetup(r *gin.Engine) {
+	docs.SwaggerInfo.Host = s.config.App.Host + ":" + s.config.App.Port
+	docs.SwaggerInfo.BasePath = "/api/v1"
+
+	s.registerRoutes(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	go func() {
-		err := s.openBrowser("http://" + s.config.App.Host + ":" + s.config.App.Port + s.config.Swagger.DocPath)
-		if err != nil {
-			s.logger.WithFields(logrus.Fields{
-				"Error": "Something went wrong while opening swagger on start",
-			}).Error(err.Error())
-		}
-	}()
+	// Auto-opening a browser only makes sense for local dev; skip in deployed
+	// (headless) environments where the exec command would just fail.
+	if s.config.App.Environment == "local-development" {
+		go func() {
+			err := s.openBrowser("http://" + s.config.App.Host + ":" + s.config.App.Port + s.config.Swagger.DocPath)
+			if err != nil {
+				s.logger.WithFields(logrus.Fields{
+					"Error": "Something went wrong while opening swagger on start",
+				}).Error(err.Error())
+			}
+		}()
+	}
 }
 
 func (s *Service) RouteSetup(r *gin.RouterGroup) {

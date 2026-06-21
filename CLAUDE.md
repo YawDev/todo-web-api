@@ -4,7 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## What this is
 
-The **Go + Gin + GORM** REST API for a two-service Todo app. It owns auth, persistence, and business logic. The client is a separate React SPA ([todo-app-react](https://github.com/YawDev/todo-app-react)) at `http://localhost:5173`. This API runs at `http://localhost:8080`, base path `/api/v1`.
+The **Go + Gin + GORM** REST API powering **Todo Manager** — a two-service portfolio project. It owns auth, persistence, and business logic. The client is a separate React SPA ([todo-app-react](https://github.com/YawDev/todo-app-react)) served from `https://todo-manager.app`. This API is served from `https://api.todo-manager.app`, base path `/api/v1`.
+
+For local development the API runs at `http://localhost:8080` and the SPA at `http://localhost:5173`.
 
 ## Commands
 

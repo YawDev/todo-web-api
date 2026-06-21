@@ -1,0 +1,12 @@
+.git
+.gitignore
+*.md
+todo.db
+todo.db-*
+*.db
+tests
+.vscode
+.idea
+Dockerfile
+.dockerignore
+fly.toml

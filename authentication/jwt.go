@@ -3,6 +3,7 @@ package authentication
 import (
 	"errors"
 	//"log"
+	"os"
 	"sync"
 	"time"
 	"todo-web-api/loggerutils"
@@ -13,7 +14,16 @@ import (
 
 var ActiveTokens = make(map[string]string)
 
-var jwtKey = []byte("Secret_Key")
+// jwtKey is read from the JWT_SECRET env var in production; the literal
+// fallback is for local dev only and must never be relied on in deployment.
+var jwtKey = loadJWTKey()
+
+func loadJWTKey() []byte {
+	if key := os.Getenv("JWT_SECRET"); key != "" {
+		return []byte(key)
+	}
+	return []byte("Secret_Key")
+}
 var refreshTokens = make(map[string]string)
 var mutex = &sync.Mutex{}
 var log = loggerutils.GetLogger()

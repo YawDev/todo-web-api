@@ -1,6 +1,6 @@
 # Todo Web API — Go / Gin Backend
 
-The REST API powering the Todo application. Built with **Go**, the **Gin** web framework, and **GORM**, it handles authentication (JWT in HttpOnly cookies), persistence, and all business logic. The client is a separate **React SPA** ([todo-app-react](https://github.com/YawDev/todo-app-react)).
+The REST API powering **Todo Manager**. Built with **Go**, the **Gin** web framework, and **GORM**, it handles authentication (JWT in HttpOnly cookies), persistence, and all business logic. The client is a separate **React SPA** ([todo-app-react](https://github.com/YawDev/todo-app-react)).
 
 It ships with a layered architecture (controllers → storage managers → GORM), interface-based storage so the same handlers run against **SQLite** (default, zero-setup) or **MySQL**, structured logging with request-id correlation, and auto-generated **Swagger** docs.
 
@@ -30,10 +30,10 @@ The API sits between the React SPA and the database. Handlers depend on **storag
 ```mermaid
 graph TB
     subgraph Client
-        SPA["React SPA<br/>localhost:5173"]
+        SPA["Todo Manager SPA<br/>todo-manager.app"]
     end
 
-    subgraph "Gin Server (localhost:8080)"
+    subgraph "Todo Web API (api.todo-manager.app)"
         CORS["CORS middleware"]
         RID["RequestID middleware"]
         AUTH["Auth middleware<br/>(JWT verify)"]
@@ -178,7 +178,7 @@ Routes are registered in [server/service.go](server/service.go). Full request/re
 
 ```mermaid
 sequenceDiagram
-    participant SPA as React SPA
+    participant SPA as Todo Manager SPA
     participant MW as Auth Middleware
     participant Ctrl as Controller
     participant Auth as authentication/jwt
@@ -219,7 +219,7 @@ database:
   name: "todo_service"
 
 cors:
-  allowed_origins: ["http://localhost:5173"]
+  allowed_origins: ["https://todo-manager.app"]
   allow_credentials: true
 
 swagger:
@@ -233,7 +233,7 @@ Switching databases is a one-line change: `useSQLite: true|false`. `ConfigureDb`
 
 ---
 
-## Getting Started
+## Getting Started (local dev)
 
 ### Prerequisites
 
@@ -285,4 +285,4 @@ This is a portfolio project; the following are known shortcuts worth calling out
 
 ## Related
 
-- **Frontend SPA:** [todo-app-react](https://github.com/YawDev/todo-app-react) (React 19 + Vite)
+- **Frontend SPA:** [todo-app-react](https://github.com/YawDev/todo-app-react) — Todo Manager (React 19 + Vite)
